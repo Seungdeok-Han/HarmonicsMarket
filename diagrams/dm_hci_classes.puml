@@ -1,0 +1,74 @@
+@startuml DM_HCI_Classes
+title DM & HCI Classes - PythonProject4
+skinparam classAttributeIconSize 0
+
+package "DM (Data Management)" {
+  class InstrumentPost {
+    +id: int
+    +title: str
+    +brand_id: int
+    +model_name: str
+    +price: decimal
+    +user_id: int
+  }
+
+  class User {
+    +id: int
+    +username: str
+  }
+
+  class Comment {
+    +id: int
+    +content: str
+    +user_id: int
+    +post_id: int
+  }
+
+  class Like {
+    +id: int
+    +user_id: int
+    +post_id: int
+  }
+
+  class BrandInfo
+  class MyInstrument
+  class GenreTag
+
+  interface PostRepositoryInterface
+  interface UserRepositoryInterface
+  interface CommentRepositoryInterface
+  interface LikeRepositoryInterface
+}
+
+package "HCI (Presentation)" {
+  class PostCreateDTO
+  class PostUpdateDTO
+  class CommentCreateDTO
+  class UserRegisterDTO
+  class UserPublicDTO
+  class LikeResponseDTO
+}
+
+' relationships
+User "1" <-- "*" InstrumentPost : author
+InstrumentPost "1" <-- "*" Comment : comments
+InstrumentPost "1" <-- "*" Like : likes
+
+PostRepositoryInterface <|.. PostRepositoryInterface
+UserRepositoryInterface <|.. UserRepositoryInterface
+CommentRepositoryInterface <|.. CommentRepositoryInterface
+LikeRepositoryInterface <|.. LikeRepositoryInterface
+
+' HCI -> DM
+PostCreateDTO --> InstrumentPost
+PostUpdateDTO --> InstrumentPost
+CommentCreateDTO --> Comment
+UserRegisterDTO --> User
+LikeResponseDTO --> Like
+
+note bottom
+  - DM: SQLAlchemy 모델(실제 DB 테이블)과 Repository 인터페이스
+  - HCI: 요청/응답 DTOs (서버의 폼/JSON 처리 단위)
+end note
+
+@enduml

@@ -1,0 +1,847 @@
+[
+  {
+    "id": 30,
+    "username": "gkstmdejr99",
+    "user_id": 1,
+    "image": "20251222232117_1766317135.jpg",
+    "media": [
+      {
+        "type": "image",
+        "filename": "20251222232117_1766317135.jpg"
+      }
+    ],
+    "caption": "테스트 2",
+    "created_at": "2025-12-22 23:21:17",
+    "likes": [],
+    "comments": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "username": "gkstmdejr99",
+        "content": "댓글 테스트1",
+        "created_at": "2025-12-23 01:05:43",
+        "parent_id": null,
+        "likes": []
+      },
+      {
+        "id": 2,
+        "user_id": 1,
+        "username": "gkstmdejr99",
+        "content": "2",
+        "created_at": "2025-12-23 01:05:47",
+        "parent_id": null,
+        "likes": []
+      }
+    ]
+  },
+  {
+    "id": 29,
+    "username": "gkstmdejr99",
+    "user_id": 1,
+    "image": "20251222232107_1766361739.jpg",
+    "media": [
+      {
+        "type": "image",
+        "filename": "20251222232107_1766361739.jpg"
+      }
+    ],
+    "caption": "sns 테스트 1",
+    "created_at": "2025-12-22 23:21:07",
+    "likes": [],
+    "comments": []
+  },
+  {
+    "id": 16,
+    "username": "gkstmdejr99",
+    "user_id": 1,
+    "image": "20251222231437_1766195845.jpg",
+    "media": [
+      {
+        "type": "image",
+        "filename": "20251222231437_1766195845.jpg"
+      }
+    ],
+    "caption": "새 기타 구매 했어요 !",
+    "created_at": "2025-12-22 23:14:37",
+    "likes": [],
+    "comments": []
+  },
+  {
+    "id": 6,
+    "username": "데모유저1",
+    "user_id": 999,
+    "image": "",
+    "media": [],
+    "caption": "새로 산 펜더 스트랫 🎸 소리가 정말 좋네요! #펜더 #일렉기타",
+    "created_at": "2025-12-21 21:48:56",
+    "likes": [],
+    "comments": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "username": "gkstmdejr99",
+        "content": "멋지네요! 어떤 모델이에요?",
+        "created_at": "2025-12-21 22:18:56",
+        "likes": [],
+        "parent_id": null
+      },
+      {
+        "id": 2,
+        "user_id": 999,
+        "username": "데모유저1",
+        "content": "American Professional II입니다!",
+        "created_at": "2025-12-21 22:48:56",
+        "likes": [],
+        "parent_id": 1
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "username": "기타매니아",
+    "user_id": 998,
+    "image": "",
+    "media": [],
+    "caption": "오늘 연습 세션 완료! 드디어 어려운 솔로 파트를 마스터했어요 💪",
+    "created_at": "2025-12-21 18:48:56",
+    "likes": [
+      1
+    ],
+    "comments": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "username": "gkstmdejr99",
+        "content": "대단해요! 어떤 곡이에요?",
+        "created_at": "2025-12-21 19:48:56",
+        "likes": [],
+        "parent_id": null
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "username": "재즈기타리스트",
+    "user_id": 997,
+    "image": "",
+    "media": [],
+    "caption": "깁슨 ES-335 빈티지 사운드가 일품이네요 🎵 재즈 연주하기 정말 좋아요",
+    "created_at": "2025-12-21 15:48:56",
+    "likes": [
+      1,
+      998
+    ],
+    "comments": []
+  },
+  {
+    "id": 22,
+    "username": "jazz_guitarist",
+    "user_id": 106,
+    "image": "community_22_jazz_guitarist.jpg",
+    "media": [
+      {
+        "type": "image",
+        "filename": "community_22_jazz_guitarist.jpg"
+      }
+    ],
+    "caption": "재즈 클럽에서 즉흥 연주 🎺 관객들 반응이 너무 좋았어요! #재즈 #즉흥연주 #라이브",
+    "created_at": "2025-12-21 14:32:01",
+    "likes": [
+      {
+        "id": 104,
+        "username": "blues_master"
+      },
+      {
+        "id": 101,
+        "username": "guitar_lover_99"
+      },
+      {
+        "id": 1,
+        "username": "gkstmdejr99"
+      },
+      {
+        "id": 103,
+        "username": "acoustic_dreamer"
+      },
+      {
+        "id": 102,
+        "username": "rockstar_wannabe"
+      }
+    ],
+    "comments": [
+      {
+        "id": 1220,
+        "user_id": 101,
+        "username": "guitar_lover_99",
+        "content": "영상으로 보고 싶어요!",
+        "created_at": "2025-12-21 23:32:01",
+        "likes": [],
+        "parent_id": null
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "username": "음악스튜디오",
+    "user_id": 996,
+    "image": "",
+    "media": [],
+    "caption": "신곡 녹음 중입니다! 어쿠스틱 기타 사운드 체크 🎼",
+    "created_at": "2025-12-21 11:48:56",
+    "likes": [
+      1
+    ],
+    "comments": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "username": "gkstmdejr99",
+        "content": "기대되네요!",
+        "created_at": "2025-12-21 12:48:56",
+        "likes": [],
+        "parent_id": null
+      }
+    ]
+  },
+  {
+    "id": 24,
+    "username": "vintage_collector",
+    "user_id": 108,
+    "image": "community_24_vintage_collector.jpg",
+    "media": [
+      {
+        "type": "image",
+        "filename": "community_24_vintage_collector.jpg"
+      }
+    ],
+    "caption": "빈티지 기타 컬렉션 업데이트! 1970년대 깁슨 추가했어요 🎸 #빈티지 #컬렉션 #깁슨",
+    "created_at": "2025-12-21 02:33:01",
+    "likes": [
+      {
+        "id": 101,
+        "username": "guitar_lover_99"
+      },
+      {
+        "id": 102,
+        "username": "rockstar_wannabe"
+      },
+      {
+        "id": 104,
+        "username": "blues_master"
+      }
+    ],
+    "comments": []
+  },
+  {
+    "id": 10,
+    "username": "락밴드드러머",
+    "user_id": 995,
+    "image": "",
+    "media": [],
+    "caption": "주말 공연 준비 완료! 오늘 밤 클럽에서 봐요 🤘",
+    "created_at": "2025-12-20 23:48:56",
+    "likes": [
+      1,
+      998,
+      999
+    ],
+    "comments": [
+      {
+        "id": 1,
+        "user_id": 998,
+        "username": "기타매니아",
+        "content": "꼭 갈게요!",
+        "created_at": "2025-12-21 03:48:56",
+        "likes": [],
+        "parent_id": null
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "username": "클래식기타",
+    "user_id": 994,
+    "image": "",
+    "media": [],
+    "caption": "라미레즈 기타로 바흐 연주 중... 집중력 100% 🎻",
+    "created_at": "2025-12-20 18:48:56",
+    "likes": [
+      1
+    ],
+    "comments": []
+  },
+  {
+    "id": 19,
+    "username": "acoustic_dreamer",
+    "user_id": 103,
+    "image": "community_19_acoustic_dreamer.jpg",
+    "media": [
+      {
+        "type": "image",
+        "filename": "community_19_acoustic_dreamer.jpg"
+      }
+    ],
+    "caption": "카페에서 어쿠스틱 공연 준비 중 ☕️ 떨리지만 기대돼요! #공연 #어쿠스틱 #버스킹",
+    "created_at": "2025-12-20 09:39:01",
+    "likes": [
+      {
+        "id": 102,
+        "username": "rockstar_wannabe"
+      },
+      {
+        "id": 103,
+        "username": "acoustic_dreamer"
+      },
+      {
+        "id": 101,
+        "username": "guitar_lover_99"
+      },
+      {
+        "id": 1,
+        "username": "gkstmdejr99"
+      },
+      {
+        "id": 104,
+        "username": "blues_master"
+      }
+    ],
+    "comments": [
+      {
+        "id": 1190,
+        "user_id": 103,
+        "username": "acoustic_dreamer",
+        "content": "멋지네요! 👍",
+        "created_at": "2025-12-20 20:39:01",
+        "likes": [],
+        "parent_id": null
+      },
+      {
+        "id": 1191,
+        "user_id": 104,
+        "username": "blues_master",
+        "content": "정말 대단해요!",
+        "created_at": "2025-12-20 19:39:01",
+        "likes": [],
+        "parent_id": null
+      },
+      {
+        "id": 1192,
+        "user_id": 104,
+        "username": "blues_master",
+        "content": "연습 화이팅!",
+        "created_at": "2025-12-20 14:39:01",
+        "likes": [],
+        "parent_id": null
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "username": "blues_master",
+    "user_id": 104,
+    "image": "community_20_blues_master.jpg",
+    "media": [
+      {
+        "type": "image",
+        "filename": "community_20_blues_master.jpg"
+      }
+    ],
+    "caption": "이 펜딩이 정말 끝내줘요... 블루스의 매력에 빠져듭니다 🎶 #블루스 #기타연주",
+    "created_at": "2025-12-20 01:42:01",
+    "likes": [
+      {
+        "id": 101,
+        "username": "guitar_lover_99"
+      },
+      {
+        "id": 102,
+        "username": "rockstar_wannabe"
+      },
+      {
+        "id": 103,
+        "username": "acoustic_dreamer"
+      }
+    ],
+    "comments": [
+      {
+        "id": 1200,
+        "user_id": 102,
+        "username": "rockstar_wannabe",
+        "content": "언제 한번 같이 연주해요!",
+        "created_at": "2025-12-20 09:42:01",
+        "likes": [],
+        "parent_id": null
+      },
+      {
+        "id": 1201,
+        "user_id": 103,
+        "username": "acoustic_dreamer",
+        "content": "최고예요!",
+        "created_at": "2025-12-20 11:42:01",
+        "likes": [],
+        "parent_id": null
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "username": "베이스연주자",
+    "user_id": 993,
+    "image": "",
+    "media": [],
+    "caption": "새 베이스 픽업 교체 완료! 톤이 완전 달라졌어요 🔊",
+    "created_at": "2025-12-19 23:48:56",
+    "likes": [
+      1,
+      999
+    ],
+    "comments": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "username": "gkstmdejr99",
+        "content": "어떤 픽업으로 바꾸셨어요?",
+        "created_at": "2025-12-20 01:48:56",
+        "likes": [],
+        "parent_id": null
+      },
+      {
+        "id": 2,
+        "user_id": 993,
+        "username": "베이스연주자",
+        "content": "세이모어 던컨 SPB-3으로 바꿨어요!",
+        "created_at": "2025-12-20 03:48:56",
+        "likes": [],
+        "parent_id": 1
+      }
+    ]
+  },
+  {
+    "id": 26,
+    "username": "beginner_guitarist",
+    "user_id": 110,
+    "image": "community_26_beginner_guitarist.jpg",
+    "media": [
+      {
+        "type": "image",
+        "filename": "community_26_beginner_guitarist.jpg"
+      }
+    ],
+    "caption": "기타 시작한지 3개월! 첫 곡 완주 성공했어요 ㅠㅠ 감동 #기타초보 #연습 #성장",
+    "created_at": "2025-12-19 22:51:01",
+    "likes": [
+      {
+        "id": 103,
+        "username": "acoustic_dreamer"
+      },
+      {
+        "id": 101,
+        "username": "guitar_lover_99"
+      },
+      {
+        "id": 1,
+        "username": "gkstmdejr99"
+      },
+      {
+        "id": 104,
+        "username": "blues_master"
+      },
+      {
+        "id": 102,
+        "username": "rockstar_wannabe"
+      }
+    ],
+    "comments": []
+  },
+  {
+    "id": 25,
+    "username": "indie_music_fan",
+    "user_id": 109,
+    "image": "community_25_indie_music_fan.jpg",
+    "media": [
+      {
+        "type": "image",
+        "filename": "community_25_indie_music_fan.jpg"
+      }
+    ],
+    "caption": "인디 밴드 새 앨범 레코딩 중 🎙️ 우리 곡 듣고 싶으신 분? #인디음악 #레코딩 #밴드",
+    "created_at": "2025-12-19 18:38:01",
+    "likes": [
+      {
+        "id": 1,
+        "username": "gkstmdejr99"
+      },
+      {
+        "id": 103,
+        "username": "acoustic_dreamer"
+      },
+      {
+        "id": 101,
+        "username": "guitar_lover_99"
+      },
+      {
+        "id": 104,
+        "username": "blues_master"
+      },
+      {
+        "id": 102,
+        "username": "rockstar_wannabe"
+      }
+    ],
+    "comments": []
+  },
+  {
+    "id": 13,
+    "username": "어쿠스틱러버",
+    "user_id": 992,
+    "image": "",
+    "media": [],
+    "caption": "마틴 D-28 드디어 구매했습니다! 평생 꿈꾸던 기타예요 😭✨",
+    "created_at": "2025-12-19 15:48:56",
+    "likes": [
+      1,
+      998,
+      999,
+      997
+    ],
+    "comments": [
+      {
+        "id": 1,
+        "user_id": 998,
+        "username": "기타매니아",
+        "content": "축하드려요! 정말 좋은 기타죠!",
+        "created_at": "2025-12-19 17:48:56",
+        "likes": [],
+        "parent_id": null
+      }
+    ]
+  },
+  {
+    "id": 27,
+    "username": "song_writer_kim",
+    "user_id": 111,
+    "image": "community_27_song_writer_kim.jpg",
+    "media": [
+      {
+        "type": "image",
+        "filename": "community_27_song_writer_kim.jpg"
+      }
+    ],
+    "caption": "새 곡 작곡 중... 멜로디가 계속 머릿속을 맴도네요 🎼 #작곡 #송라이팅 #창작",
+    "created_at": "2025-12-19 14:53:01",
+    "likes": [
+      {
+        "id": 104,
+        "username": "blues_master"
+      },
+      {
+        "id": 103,
+        "username": "acoustic_dreamer"
+      },
+      {
+        "id": 102,
+        "username": "rockstar_wannabe"
+      },
+      {
+        "id": 101,
+        "username": "guitar_lover_99"
+      },
+      {
+        "id": 1,
+        "username": "gkstmdejr99"
+      }
+    ],
+    "comments": []
+  },
+  {
+    "id": 14,
+    "username": "메탈기타",
+    "user_id": 991,
+    "image": "",
+    "media": [],
+    "caption": "7현 기타로 다운튜닝 연습 중... 손가락이 아파 😅",
+    "created_at": "2025-12-18 23:48:56",
+    "likes": [
+      1
+    ],
+    "comments": []
+  },
+  {
+    "id": 23,
+    "username": "metal_shredder",
+    "user_id": 107,
+    "image": "community_23_metal_shredder.jpg",
+    "media": [
+      {
+        "type": "image",
+        "filename": "community_23_metal_shredder.jpg"
+      }
+    ],
+    "caption": "새로 익힌 스윕 피킹 테크닉! 손가락이 날아갈 것 같네요 🔥 #메탈 #테크닉 #연습",
+    "created_at": "2025-12-18 17:57:01",
+    "likes": [
+      {
+        "id": 1,
+        "username": "gkstmdejr99"
+      },
+      {
+        "id": 102,
+        "username": "rockstar_wannabe"
+      },
+      {
+        "id": 103,
+        "username": "acoustic_dreamer"
+      }
+    ],
+    "comments": []
+  },
+  {
+    "id": 21,
+    "username": "finger_style_pro",
+    "user_id": 105,
+    "image": "community_21_finger_style_pro.jpg",
+    "media": [
+      {
+        "type": "image",
+        "filename": "community_21_finger_style_pro.jpg"
+      }
+    ],
+    "caption": "핑거스타일 새 곡 마스터! 2주 동안 연습한 보람이 있네요 😊 #핑거스타일 #어쿠스틱기타",
+    "created_at": "2025-12-18 17:39:01",
+    "likes": [
+      {
+        "id": 104,
+        "username": "blues_master"
+      },
+      {
+        "id": 103,
+        "username": "acoustic_dreamer"
+      },
+      {
+        "id": 101,
+        "username": "guitar_lover_99"
+      },
+      {
+        "id": 102,
+        "username": "rockstar_wannabe"
+      },
+      {
+        "id": 1,
+        "username": "gkstmdejr99"
+      }
+    ],
+    "comments": [
+      {
+        "id": 1210,
+        "user_id": 1,
+        "username": "gkstmdejr99",
+        "content": "언제 한번 같이 연주해요!",
+        "created_at": "2025-12-18 18:39:01",
+        "likes": [],
+        "parent_id": null
+      },
+      {
+        "id": 1211,
+        "user_id": 102,
+        "username": "rockstar_wannabe",
+        "content": "와 진짜 좋네요 🎸",
+        "created_at": "2025-12-19 03:39:01",
+        "likes": [],
+        "parent_id": null
+      },
+      {
+        "id": 1212,
+        "user_id": 102,
+        "username": "rockstar_wannabe",
+        "content": "멋지네요! 👍",
+        "created_at": "2025-12-19 00:39:01",
+        "likes": [],
+        "parent_id": null
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "username": "플라멩코",
+    "user_id": 990,
+    "image": "",
+    "media": [],
+    "caption": "스페인 세비야에서 플라멩코 레슨 받고 있어요! 🇪🇸💃",
+    "created_at": "2025-12-18 11:48:56",
+    "likes": [
+      1,
+      998,
+      997,
+      994
+    ],
+    "comments": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "username": "gkstmdejr99",
+        "content": "우와 부럽네요!",
+        "created_at": "2025-12-18 13:48:56",
+        "likes": [],
+        "parent_id": null
+      }
+    ]
+  },
+  {
+    "id": 28,
+    "username": "classical_guitar_lover",
+    "user_id": 112,
+    "image": "community_28_classical_guitar_lover.jpg",
+    "media": [
+      {
+        "type": "image",
+        "filename": "community_28_classical_guitar_lover.jpg"
+      }
+    ],
+    "caption": "클래식 기타 독주회 준비 중입니다 🎻 바흐 곡 연습 중! #클래식기타 #독주회 #바흐",
+    "created_at": "2025-12-17 04:36:01",
+    "likes": [
+      {
+        "id": 103,
+        "username": "acoustic_dreamer"
+      },
+      {
+        "id": 1,
+        "username": "gkstmdejr99"
+      },
+      {
+        "id": 102,
+        "username": "rockstar_wannabe"
+      },
+      {
+        "id": 101,
+        "username": "guitar_lover_99"
+      },
+      {
+        "id": 104,
+        "username": "blues_master"
+      }
+    ],
+    "comments": []
+  },
+  {
+    "id": 17,
+    "username": "guitar_lover_99",
+    "user_id": 101,
+    "image": "community_17_guitar_lover_99.jpg",
+    "media": [
+      {
+        "type": "image",
+        "filename": "community_17_guitar_lover_99.jpg"
+      }
+    ],
+    "caption": "오늘 새벽 연습 세션 🌙 혼자 조용히 치는 시간이 제일 좋아요 #연습 #기타생활",
+    "created_at": "2025-12-15 11:46:01",
+    "likes": [
+      {
+        "id": 102,
+        "username": "rockstar_wannabe"
+      },
+      {
+        "id": 101,
+        "username": "guitar_lover_99"
+      },
+      {
+        "id": 104,
+        "username": "blues_master"
+      },
+      {
+        "id": 1,
+        "username": "gkstmdejr99"
+      },
+      {
+        "id": 103,
+        "username": "acoustic_dreamer"
+      }
+    ],
+    "comments": [
+      {
+        "id": 1170,
+        "user_id": 102,
+        "username": "rockstar_wannabe",
+        "content": "최고예요!",
+        "created_at": "2025-12-15 21:46:01",
+        "likes": [],
+        "parent_id": null
+      },
+      {
+        "id": 1171,
+        "user_id": 1,
+        "username": "gkstmdejr99",
+        "content": "영상으로 보고 싶어요!",
+        "created_at": "2025-12-15 15:46:01",
+        "likes": [],
+        "parent_id": null
+      },
+      {
+        "id": 1172,
+        "user_id": 101,
+        "username": "guitar_lover_99",
+        "content": "연습 화이팅!",
+        "created_at": "2025-12-15 20:46:01",
+        "likes": [],
+        "parent_id": null
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "username": "rockstar_wannabe",
+    "user_id": 102,
+    "image": "community_18_rockstar_wannabe.jpg",
+    "media": [
+      {
+        "type": "image",
+        "filename": "community_18_rockstar_wannabe.jpg"
+      }
+    ],
+    "caption": "밴드 합주 끝나고 한컷! 오늘 정말 잘 맞았던 것 같아요 🤘 #밴드 #합주 #락음악",
+    "created_at": "2025-12-15 01:58:01",
+    "likes": [
+      {
+        "id": 103,
+        "username": "acoustic_dreamer"
+      },
+      {
+        "id": 1,
+        "username": "gkstmdejr99"
+      },
+      {
+        "id": 104,
+        "username": "blues_master"
+      },
+      {
+        "id": 102,
+        "username": "rockstar_wannabe"
+      },
+      {
+        "id": 101,
+        "username": "guitar_lover_99"
+      }
+    ],
+    "comments": [
+      {
+        "id": 1180,
+        "user_id": 102,
+        "username": "rockstar_wannabe",
+        "content": "계속 응원할게요!",
+        "created_at": "2025-12-15 09:58:01",
+        "likes": [],
+        "parent_id": null
+      },
+      {
+        "id": 1181,
+        "user_id": 103,
+        "username": "acoustic_dreamer",
+        "content": "영상으로 보고 싶어요!",
+        "created_at": "2025-12-15 03:58:01",
+        "likes": [],
+        "parent_id": null
+      }
+    ]
+  }
+]

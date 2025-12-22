@@ -1,0 +1,51 @@
+﻿skinparam packageStyle rectangle
+package "Web Client / Static" {
+[templates]
+[static]
+}
+package "Application (Flask)" {
+package "app" {
+package "models" {
+class InstrumentPost
+class User
+class Comment
+class Like
+}
+package "services" {
+interface PostService
+interface FeedService
+}
+package "repositories" {
+interface PostRepository
+interface UserRepository
+}
+package "adapters" {
+interface YouTubeAdapter
+}
+package "routes" {
+[routes.py]
+[routes_auth.py]
+}
+}
+}
+package "Persistence / Migrations" {
+[migrations]
+}
+package "Scripts / Tools" {
+[scripts]
+}
+package "Diagrams / Docs" {
+[diagrams]
+}
+package "External" {
+[YouTube API]
+[Database]
+}
+PostService ..> PostRepository : uses
+PostService ..> PostFactory : creates
+PostRepository ..> Database : persists to
+FeedService ..> PostRepository : read
+FeedService ..> SortStrategy : uses
+routes.py ..> YouTubeAdapter : uses
+YouTubeAdapter ..> "YouTube API" : calls
+FeedPublisher ..> FollowerObserver : notifies

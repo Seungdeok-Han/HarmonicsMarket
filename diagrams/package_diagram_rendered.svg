@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+  <style>
+    .pkg { fill:#f7f9fc; stroke:#334155; stroke-width:1.5; rx:6; }
+    .box { fill:#ffffff; stroke:#1f2937; stroke-width:1.2; rx:4; }
+    .title { font: bold 16px sans-serif; fill:#0f172a }
+    .label { font: 12px sans-serif; fill:#0f172a }
+    .arrow { stroke:#0f172a; stroke-width:1.2; marker-end:url(#arrowhead); }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#0f172a" />
+    </marker>
+  </defs>
+
+  <!-- Top: Web Client / Static -->
+  <g transform="translate(40,20)">
+    <rect class="pkg" x="0" y="0" width="320" height="80" />
+    <text x="16" y="28" class="title">Web Client / Static</text>
+    <rect class="box" x="16" y="40" width="120" height="28" />
+    <text x="28" y="60" class="label">templates</text>
+    <rect class="box" x="156" y="40" width="120" height="28" />
+    <text x="168" y="60" class="label">static</text>
+  </g>
+
+  <!-- Center: Application -->
+  <g transform="translate(240,130)">
+    <rect class="pkg" x="0" y="0" width="720" height="560" />
+    <text x="16" y="28" class="title">Application (Flask) / app</text>
+
+    <!-- models -->
+    <rect class="box" x="24" y="48" width="220" height="120" />
+    <text x="40" y="72" class="label">models</text>
+    <text x="40" y="96" class="label">• InstrumentPost</text>
+    <text x="40" y="116" class="label">• User</text>
+    <text x="40" y="136" class="label">• Comment, Like</text>
+
+    <!-- services -->
+    <rect class="box" x="260" y="48" width="200" height="120" />
+    <text x="276" y="72" class="label">services</text>
+    <text x="276" y="96" class="label">• PostService</text>
+    <text x="276" y="116" class="label">• FeedService</text>
+
+    <!-- repositories -->
+    <rect class="box" x="492" y="48" width="200" height="120" />
+    <text x="508" y="72" class="label">repositories</text>
+    <text x="508" y="96" class="label">• PostRepository</text>
+    <text x="508" y="116" class="label">• UserRepository</text>
+
+    <!-- adapters -->
+    <rect class="box" x="24" y="192" width="220" height="72" />
+    <text x="40" y="216" class="label">adapters</text>
+    <text x="40" y="236" class="label">• YouTubeAdapter</text>
+
+    <!-- routes -->
+    <rect class="box" x="260" y="192" width="432" height="72" />
+    <text x="276" y="216" class="label">routes</text>
+    <text x="276" y="236" class="label">• routes.py, routes_auth.py</text>
+
+    <!-- nested arrows/notes -->
+    <line class="arrow" x1="200" y1="160" x2="260" y2="160" />
+    <text x="210" y="154" class="label">Factory →</text>
+
+  </g>
+
+  <!-- Persistence / External -->
+  <g transform="translate(40,420)">
+    <rect class="pkg" x="0" y="0" width="220" height="84" />
+    <text x="16" y="26" class="title">Persistence / Migrations</text>
+    <text x="24" y="52" class="label">migrations</text>
+  </g>
+
+  <g transform="translate(300,420)">
+    <rect class="pkg" x="0" y="0" width="220" height="84" />
+    <text x="16" y="26" class="title">Scripts / Tools</text>
+    <text x="24" y="52" class="label">scripts/</text>
+  </g>
+
+  <g transform="translate(560,420)">
+    <rect class="pkg" x="0" y="0" width="220" height="84" />
+    <text x="16" y="26" class="title">Diagrams / Docs</text>
+    <text x="24" y="52" class="label">diagrams/</text>
+  </g>
+
+  <g transform="translate(860,120)">
+    <rect class="pkg" x="0" y="0" width="300" height="132" />
+    <text x="16" y="28" class="title">External</text>
+    <text x="32" y="60" class="label">• YouTube API</text>
+    <text x="32" y="84" class="label">• Database</text>
+  </g>
+
+  <!-- Arrows between components -->
+  <line class="arrow" x1="520" y1="230" x2="880" y2="200" />
+  <text x="620" y="220" class="label">YouTubeAdapter → YouTube API</text>
+
+  <line class="arrow" x1="540" y1="300" x2="760" y2="300" />
+  <text x="580" y="290" class="label">PostService → PostRepository → Database</text>
+
+  <line class="arrow" x1="420" y1="300" x2="420" y2="460" />
+  <text x="360" y="380" class="label">app → migrations</text>
+
+</svg>

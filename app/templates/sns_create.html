@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}새 SNS 게시물{% endblock %}
+
+{% block content %}
+<h3>새 게시물 올리기</h3>
+<form method="post" enctype="multipart/form-data">
+  <div class="mb-3">
+    <label class="form-label">이미지 선택 (여러 장 가능)</label>
+    <input type="file" name="images" class="form-control" accept="image/*" multiple>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">영상 선택 (여러 개 가능)</label>
+    <input type="file" name="videos" class="form-control" accept="video/*" multiple>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">캡션</label>
+    <textarea name="caption" class="form-control" rows="3"></textarea>
+  </div>
+  <button class="btn btn-primary">올리기</button>
+  <a class="btn btn-secondary" href="{{ url_for('main.sns_feed') }}">취소</a>
+</form>
+{% endblock %}

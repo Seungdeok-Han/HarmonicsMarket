@@ -1,0 +1,195 @@
+@startuml ClassDiagram
+' 클래스 다이어그램 (프로젝트: PythonProject4)
+' 이 파일을 VSCode의 PlantUML 확장으로 열어 미리보기하세요.
+
+class BrandInfo {
+  +int id
+  +string name
+  +text description
+  +string origin_country
+  +text famous_users
+  +string logo_url
+}
+
+class InstrumentPost {
+  +int id
+  +string title
+  +int brand_id
+  +string model_name
+  +string shape
+  +int condition
+  +text description
+  +decimal price
+  +int user_id
+  +json images
+  +int views
+  +datetime created_at
+  +string status
+}
+
+class User {
+  +int id
+  +string username
+  +string password_hash
+}
+
+class Comment {
+  +int id
+  +text content
+  +datetime created_at
+  +int user_id
+  +int post_id
+  +int parent_id
+}
+
+class Like {
+  +int id
+  +int user_id
+  +int post_id
+}
+
+class MyInstrument {
+  +int id
+  +int user_id
+  +string brand
+  +string model_name
+  +json images
+  +text description
+  +datetime created_at
+}
+
+class GenreTag {
+  +int id
+  +string brand
+  +string model_name
+  +string genres
+}
+
+ ' 관계 정의
+ InstrumentPost "1" *-- "0..*" Comment : has
+ User "1" -- "0..*" InstrumentPost : posts
+ InstrumentPost "0..1" --> "1" BrandInfo : brand
+ Comment "0..1" o-- "0..*" Comment : replies
+ Like "0..*" -- "1" User : user
+ Like "0..*" -- "1" InstrumentPost : post
+ User "1" -- "0..*" Like : likes
+ User "1" -- "0..*" MyInstrument : my_instruments
+ GenreTag .. InstrumentPost : tags (by brand/model)
+
+ ' Instagram-style Feed 기능 추가: FeedPost
+class FeedPost {
+  +int id
+  +int user_id
+  +string caption
+  +json images
+  +datetime created_at
+  +int likes_count
+  +int comments_count
+  +string visibility
+}
+
+User "1" -- "0..*" FeedPost : feed_posts
+FeedPost "1" *-- "0..*" Comment : has
+Like "0..*" -- "1" FeedPost : feed_post
+
+' ---------------------------
+' 설계 패턴 추가(표준 패턴 클래스 및 관계 표시)
+' ---------------------------
+
+' Singleton: DB/Manager
+class Database <<Singleton>> {
+  +get_session()
+}
+
+' Repository: 데이터 접근 추상화
+class PostRepository <<Repository>> {
+  +find(id)
+  +save(post)
+  +delete(post)
+}
+class UserRepository <<Repository>> {
+  +find(id)
+  +find_by_username(name)
+  +save(user)
+}
+
+' Factory: Post 생성 추상화
+interface PostFactory <<Factory>> {
+  +create(type, data)
+}
+class ConcretePostFactory {
+  +create(type, data)
+}
+
+' Facade: 서비스 계층 (비즈니스 로직 캡슐화)
+class PostService <<Facade>> {
+  +createPost(data)
+  +likePost(id, user)
+  +commentPost(id, user, content)
+}
+
+' Strategy: 정렬 전략
+interface SortStrategy <<Strategy>> {
+  +sort(query)
+}
+class ViewsSort <<Strategy>>
+class PriceSort <<Strategy>>
+class ConditionSort <<Strategy>>
+
+' Adapter: 외부 API 어댑터 (YouTube)
+interface VideoSearch <<Adapter>> {
+  +search(query)
+}
+class YouTubeAdapter {
+  +search(query)
+}
+
+' Observer: follower 알림
+interface Observer {
+  +update(event)
+}
+interface Subject {
+  +attach(obs)
+  +detach(obs)
+  +notify(event)
+}
+class FeedPublisher <<Subject>> {
+  +attach(obs)
+  +detach(obs)
+  +notify(event)
+}
+class FollowerObserver <<Observer>> {
+  +update(event)
+}
+
+' Command: 사용자의 액션을 객체화
+interface ICommand <<Command>> {
+  +execute()
+}
+class LikeCommand <<Command>> {
+  +execute()
+}
+class CommentCommand <<Command>> {
+  +execute()
+}
+
+' 관계: 패턴 클래스 연결
+Database <-- PostRepository
+Database <-- UserRepository
+PostService --> PostRepository
+PostService --> UserRepository
+PostService --> ConcretePostFactory
+ConcretePostFactory ..> InstrumentPost
+ConcretePostFactory ..> FeedPost
+PostRepository --|> PostRepository
+PostService ..> FeedPublisher : notify
+FeedPublisher --> FollowerObserver
+AppServer ..> YouTubeAdapter : uses
+AppServer ..> PostService : uses
+SortStrategy <|.. ViewsSort
+SortStrategy <|.. PriceSort
+SortStrategy <|.. ConditionSort
+ICommand <|.. LikeCommand
+ICommand <|.. CommentCommand
+
+@enduml

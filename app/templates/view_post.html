@@ -99,14 +99,21 @@
             {% endif %}
 
             {% if current_user.is_authenticated %}
+            <div class="d-flex gap-2 align-items-center flex-wrap">
                 <button id="like-button" class="btn btn-outline-danger" data-url="{{ url_for('main.toggle_like', post_id=post.id) }}">
                     {% if liked %}
-                        ❤️ 좋아요 취소
+                        <i class="bi bi-heart-fill"></i> 좋아요 취소
                     {% else %}
-                        🤍 좋아요
+                        <i class="bi bi-heart"></i> 좋아요
                     {% endif %}
                 </button>
                 <span id="like-count">{{ post.likes|length }}명이 좋아합니다</span>
+              {% if current_user.id != post.user_id %}
+                <a href="{{ url_for('main.message_user', other_id=post.user_id) }}" class="btn btn-primary">
+                  <i class="bi bi-chat-dots"></i> 판매자에게 메시지 보내기
+                </a>
+              {% endif %}
+            </div>
             {% endif %}
 
             <div class="d-flex justify-content-end align-items-center mb-2">

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="700" viewBox="0 0 1400 700">
+  <style>
+    .title { font: 700 18px sans-serif; fill: #222; }
+    .note { font: 500 12px sans-serif; fill: #666; }
+    .lifeline { stroke: #333; stroke-width: 2; }
+    .box { fill: #f7f7f7; stroke: #333; stroke-width: 2; }
+    .actor { fill: #ffffff; stroke: #333; stroke-width: 2; }
+    .msg { stroke: #222; stroke-width: 2; marker-end: url(#arrow); }
+    .label { font: 500 14px sans-serif; fill: #222; }
+    .activation { fill: #cfe8ff; stroke: #333; stroke-width: 1; }
+    .return { stroke: #777; stroke-dasharray: 6 4; marker-end: url(#arrowGray); }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#222" />
+    </marker>
+    <marker id="arrowGray" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#777" />
+    </marker>
+  </defs>
+
+  <text x="700" y="35" text-anchor="middle" class="title">시퀀스 다이어그램: 메시지 송수신 흐름</text>
+  <text x="700" y="60" text-anchor="middle" class="note">배우: 회원A / 프론트엔드 / Flask 앱(라우트) / DB / 회원B</text>
+
+  <!-- Headers -->
+  <g>
+    <rect class="actor" x="40" y="90" width="120" height="40" rx="6"/>
+    <text class="label" x="100" y="115" text-anchor="middle">회원A</text>
+
+    <rect class="box" x="240" y="90" width="150" height="40" rx="6"/>
+    <text class="label" x="315" y="115" text-anchor="middle">프론트엔드</text>
+
+    <rect class="box" x="460" y="90" width="180" height="40" rx="6"/>
+    <text class="label" x="550" y="115" text-anchor="middle">Flask 앱</text>
+
+    <rect class="box" x="700" y="90" width="150" height="40" rx="6"/>
+    <text class="label" x="775" y="115" text-anchor="middle">DB</text>
+
+    <rect class="actor" x="980" y="90" width="120" height="40" rx="6"/>
+    <text class="label" x="1040" y="115" text-anchor="middle">회원B</text>
+  </g>
+
+  <!-- Lifelines -->
+  <line class="lifeline" x1="100" y1="130" x2="100" y2="620" />
+  <line class="lifeline" x1="315" y1="130" x2="315" y2="620" />
+  <line class="lifeline" x1="550" y1="130" x2="550" y2="620" />
+  <line class="lifeline" x1="775" y1="130" x2="775" y2="620" />
+  <line class="lifeline" x1="1040" y1="130" x2="1040" y2="620" />
+
+  <!-- Flow: load dialog -->
+  <line class="msg" x1="100" y1="170" x2="315" y2="170" />
+  <text class="label" x="210" y="165" text-anchor="middle">대화 페이지 요청</text>
+
+  <line class="msg" x1="315" y1="210" x2="550" y2="210" />
+  <text class="label" x="432" y="205" text-anchor="middle">GET /messages/&lt;other_id&gt;</text>
+  <rect class="activation" x="540" y="210" width="20" height="60" />
+
+  <line class="msg" x1="550" y1="240" x2="775" y2="240" />
+  <text class="label" x="662" y="235" text-anchor="middle">대화 내역 조회</text>
+  <rect class="activation" x="765" y="240" width="20" height="40" />
+
+  <line class="return" x1="775" y1="280" x2="550" y2="280" />
+  <text class="label" x="662" y="275" text-anchor="middle">메시지 목록</text>
+
+  <line class="return" x1="550" y1="320" x2="315" y2="320" />
+  <text class="label" x="432" y="315" text-anchor="middle">UI에 표시</text>
+
+  <!-- Flow: send message -->
+  <line class="msg" x1="100" y1="380" x2="315" y2="380" />
+  <text class="label" x="210" y="375" text-anchor="middle">메시지 입력/전송</text>
+
+  <line class="msg" x1="315" y1="420" x2="550" y2="420" />
+  <text class="label" x="432" y="415" text-anchor="middle">POST /messages/&lt;other_id&gt;</text>
+  <rect class="activation" x="540" y="420" width="20" height="100" />
+
+  <line class="msg" x1="550" y1="450" x2="775" y2="450" />
+  <text class="label" x="662" y="445" text-anchor="middle">메시지 저장</text>
+  <rect class="activation" x="765" y="450" width="20" height="40" />
+
+  <line class="return" x1="775" y1="490" x2="550" y2="490" />
+  <text class="label" x="662" y="485" text-anchor="middle">OK (id/timestamp)</text>
+
+  <line class="return" x1="550" y1="520" x2="315" y2="520" />
+  <text class="label" x="432" y="515" text-anchor="middle">UI에 추가 표시</text>
+
+  <!-- (옵션) notify B -->
+  <line class="msg" x1="550" y1="560" x2="1040" y2="560" />
+  <text class="label" x="795" y="555" text-anchor="middle">알림(새 메시지)</text>
+
+  <text class="note" x="700" y="650" text-anchor="middle">참고: 알림은 폴링/웹소켓 등으로 확장 가능. 권한 검증은 라우트 단계에서 수행.</text>
+</svg>

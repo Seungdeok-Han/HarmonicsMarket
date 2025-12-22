@@ -1,0 +1,75 @@
+@startuml
+title PythonProject4 - Deployment Diagram (AWS example)
+
+' Top-level cloud
+cloud "AWS Cloud" as AWS {
+
+  node "Route 53 (DNS)" as route53
+  rectangle "CDN" {
+    [CloudFront] as cloudfront
+  }
+
+  node "VPC" as vpc {
+    node "Public Subnet" as public_subnet {
+      node "ALB / WAF" as alb
+    }
+
+    node "Private Subnet(s)" as private_subnets {
+      folder "ECS / EKS Cluster" as cluster {
+        node "Service: App (Nginx + Gunicorn)" as app_service
+        node "Worker: Celery Tasks" as worker_service
+      }
+
+      database "RDS (Aurora / MySQL)\nPrimary + Multi-AZ" as rds
+      storage "ElastiCache (Redis)" as redis
+      storage "EFS (optional)" as efs
+    }
+  }
+
+  storage "S3 (static, uploads)" as s3
+  node "ECR (container registry)" as ecr
+  node "CI/CD: GitHub Actions" as gha
+  node "Monitoring / Logging" as monitoring {
+    [Prometheus] as prometheus
+    [Grafana] as grafana
+    [Sentry] as sentry
+    [CloudWatch] as cloudwatch
+  }
+}
+
+' Edges / flows
+route53 -down-> cloudfront : DNS
+cloudfront -down-> alb : Cache static / forward requests
+alb -down-> app_service : HTTPS (ACM) / WAF
+app_service -down-> rds : SQL (3306)
+app_service -down-> redis : Cache / sessions / queue
+app_service -down-> s3 : Upload / download objects
+worker_service -down-> redis : queue / pub-sub
+worker_service -down-> s3 : process uploads
+worker_service -down-> rds : update metadata
+ecr -left-> gha : push/pull images
+gha -left-> ecr : build & push images
+gha -down-> cluster : deploy (ECS/EKS)
+prometheus -right-> app_service : scrape metrics
+grafana -right-> prometheus : dashboards
+sentry -right-> app_service : error reporting
+cloudwatch -right-> app_service : infra logs
+
+' Optional components
+note right of rds
+  Read Replica(s)
+  Backup / Automated snapshots
+end note
+
+note left of s3
+  Versioning + lifecycle rules
+end note
+
+' Security / Network annotation
+note top of vpc
+  Public Subnet: ALB
+  Private Subnets: App, Workers, RDS, Redis
+  Security Groups + IAM Roles
+end note
+
+@enduml

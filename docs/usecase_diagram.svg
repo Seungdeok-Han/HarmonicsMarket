@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900">
+  <style>
+    .actor { fill: #ffffff; stroke: #333333; stroke-width: 2; }
+    .usecase { fill: #f0f8ff; stroke: #333333; stroke-width: 2; }
+    .group { fill: #f9f9f9; stroke: #999999; stroke-width: 2; }
+    .title { font: 700 18px sans-serif; fill: #222; }
+    .label { font: 500 14px sans-serif; fill: #222; }
+    .line { stroke: #555; stroke-width: 2; }
+    .note { font: 500 12px sans-serif; fill: #666; }
+  </style>
+
+  <!-- Title -->
+  <text x="700" y="40" text-anchor="middle" class="title">Harmonics 웹사이트 유스케이스 다이어그램 (현재 v2)</text>
+  <text x="700" y="65" text-anchor="middle" class="note">배우: 방문자, 회원 / 주요 도메인: 거래, SNS, 메시지, 연습(추천·진행도·일지), 인증</text>
+
+  <!-- Actors -->
+  <!-- Visitor Actor -->
+  <g transform="translate(90, 150)">
+    <circle class="actor" cx="0" cy="0" r="24"/>
+    <line class="line" x1="0" y1="24" x2="0" y2="90"/>
+    <line class="line" x1="-30" y1="50" x2="30" y2="50"/>
+    <line class="line" x1="0" y1="90" x2="-25" y2="130"/>
+    <line class="line" x1="0" y1="90" x2="25" y2="130"/>
+    <text class="label" x="0" y="160" text-anchor="middle">방문자</text>
+  </g>
+
+  <!-- Member Actor -->
+  <g transform="translate(90, 420)">
+    <circle class="actor" cx="0" cy="0" r="24"/>
+    <line class="line" x1="0" y1="24" x2="0" y2="90"/>
+    <line class="line" x1="-30" y1="50" x2="30" y2="50"/>
+    <line class="line" x1="0" y1="90" x2="-25" y2="130"/>
+    <line class="line" x1="0" y1="90" x2="25" y2="130"/>
+    <text class="label" x="0" y="160" text-anchor="middle">회원</text>
+  </g>
+
+  <!-- Groups (Domains) -->
+  <!-- Marketplace Group -->
+  <g transform="translate(260, 100)">
+    <rect class="group" x="0" y="0" width="480" height="250" rx="12" ry="12"/>
+    <text class="label" x="20" y="28">중고 거래 (Marketplace)</text>
+    <!-- Use cases -->
+    <ellipse class="usecase" cx="150" cy="70" rx="120" ry="28"/>
+    <text class="label" x="150" y="75" text-anchor="middle">게시물 목록/검색/필터</text>
+
+    <ellipse class="usecase" cx="350" cy="70" rx="120" ry="28"/>
+    <text class="label" x="350" y="75" text-anchor="middle">게시물 상세 보기</text>
+
+    <ellipse class="usecase" cx="150" cy="140" rx="120" ry="28"/>
+    <text class="label" x="150" y="145" text-anchor="middle">판매 글 작성/수정/삭제</text>
+
+    <ellipse class="usecase" cx="350" cy="140" rx="120" ry="28"/>
+    <text class="label" x="350" y="145" text-anchor="middle">좋아요/댓글</text>
+
+    <ellipse class="usecase" cx="250" cy="210" rx="120" ry="28"/>
+    <text class="label" x="250" y="215" text-anchor="middle">마이페이지 관리</text>
+  </g>
+
+  <!-- SNS Group -->
+  <g transform="translate(780, 100)">
+    <rect class="group" x="0" y="0" width="540" height="250" rx="12" ry="12"/>
+    <text class="label" x="20" y="28">SNS/커뮤니티</text>
+
+    <ellipse class="usecase" cx="150" cy="70" rx="120" ry="28"/>
+    <text class="label" x="150" y="75" text-anchor="middle">피드 조회(무한 스크롤)</text>
+
+    <ellipse class="usecase" cx="370" cy="70" rx="120" ry="28"/>
+    <text class="label" x="370" y="75" text-anchor="middle">SNS 글 작성</text>
+
+    <ellipse class="usecase" cx="150" cy="140" rx="120" ry="28"/>
+    <text class="label" x="150" y="145" text-anchor="middle">SNS 댓글/대댓글</text>
+
+    <ellipse class="usecase" cx="370" cy="140" rx="120" ry="28"/>
+    <text class="label" x="370" y="145" text-anchor="middle">SNS 좋아요</text>
+
+    <ellipse class="usecase" cx="260" cy="210" rx="150" ry="28"/>
+    <text class="label" x="260" y="215" text-anchor="middle">사용자 프로필 조회/팔로우</text>
+  </g>
+
+  <!-- Messaging Group -->
+  <g transform="translate(260, 380)">
+    <rect class="group" x="0" y="0" width="480" height="210" rx="12" ry="12"/>
+    <text class="label" x="20" y="28">메시지</text>
+
+    <ellipse class="usecase" cx="150" cy="80" rx="120" ry="28"/>
+    <text class="label" x="150" y="85" text-anchor="middle">메시지 목록 조회</text>
+
+    <ellipse class="usecase" cx="350" cy="80" rx="120" ry="28"/>
+    <text class="label" x="350" y="85" text-anchor="middle">1:1 대화 시작/전송</text>
+
+    <ellipse class="usecase" cx="250" cy="150" rx="140" ry="28"/>
+    <text class="label" x="250" y="155" text-anchor="middle">알림 확인(새 메시지/상호작용)</text>
+  </g>
+
+  <!-- Practice Group -->
+  <g transform="translate(780, 380)">
+    <rect class="group" x="0" y="0" width="540" height="300" rx="12" ry="12"/>
+    <text class="label" x="20" y="28">연습 추천/진행도/일지</text>
+
+    <ellipse class="usecase" cx="170" cy="80" rx="150" ry="28"/>
+    <text class="label" x="170" y="85" text-anchor="middle">AI 기반 연습 추천 생성</text>
+
+    <ellipse class="usecase" cx="410" cy="80" rx="150" ry="28"/>
+    <text class="label" x="410" y="85" text-anchor="middle">추천 저장/삭제</text>
+
+    <ellipse class="usecase" cx="170" cy="150" rx="150" ry="28"/>
+    <text class="label" x="170" y="155" text-anchor="middle">내 연습 목록/상세 보기</text>
+
+    <ellipse class="usecase" cx="410" cy="150" rx="150" ry="28"/>
+    <text class="label" x="410" y="155" text-anchor="middle">곡/기술 진행 상태 업데이트</text>
+
+    <ellipse class="usecase" cx="290" cy="220" rx="170" ry="28"/>
+    <text class="label" x="290" y="225" text-anchor="middle">연습 일지 작성/조회(스트릭, 시간, 건수)</text>
+  </g>
+
+  <!-- Auth Group -->
+  <g transform="translate(260, 620)">
+    <rect class="group" x="0" y="0" width="1060" height="180" rx="12" ry="12"/>
+    <text class="label" x="20" y="28">인증/권한</text>
+
+    <ellipse class="usecase" cx="180" cy="90" rx="120" ry="28"/>
+    <text class="label" x="180" y="95" text-anchor="middle">회원가입</text>
+
+    <ellipse class="usecase" cx="380" cy="90" rx="120" ry="28"/>
+    <text class="label" x="380" y="95" text-anchor="middle">로그인/로그아웃</text>
+
+    <ellipse class="usecase" cx="600" cy="90" rx="150" ry="28"/>
+    <text class="label" x="600" y="95" text-anchor="middle">접근 제어(로그인 필요 기능)</text>
+
+    <ellipse class="usecase" cx="860" cy="90" rx="150" ry="28"/>
+    <text class="label" x="860" y="95" text-anchor="middle">환경변수/API 키 보안 관리</text>
+  </g>
+
+  <!-- Connectors from Visitor -->
+  <!-- Visitor to Marketplace: list/detail -->
+  <line class="line" x1="120" y1="200" x2="370" y2="170"/>
+  <line class="line" x1="120" y1="200" x2="610" y2="170"/>
+  <!-- Visitor to SNS: feed -->
+  <line class="line" x1="120" y1="200" x2="930" y2="170"/>
+  <!-- Visitor to Auth: register/login -->
+  <line class="line" x1="120" y1="200" x2="440" y2="710"/>
+  <line class="line" x1="120" y1="200" x2="640" y2="710"/>
+
+  <!-- Connectors from Member -->
+  <!-- Member to Marketplace: CRUD, like/comment, mypage -->
+  <line class="line" x1="120" y1="470" x2="370" y2="240"/>
+  <line class="line" x1="120" y1="470" x2="610" y2="240"/>
+  <line class="line" x1="120" y1="470" x2="510" y2="300"/>
+
+  <!-- Member to SNS: create, comments, likes, follow -->
+  <line class="line" x1="120" y1="470" x2="1150" y2="170"/>
+  <line class="line" x1="120" y1="470" x2="930" y2="240"/>
+  <line class="line" x1="120" y1="470" x2="1150" y2="240"/>
+  <line class="line" x1="120" y1="470" x2="1040" y2="300"/>
+
+  <!-- Member to Messaging -->
+  <line class="line" x1="120" y1="470" x2="410" y2="460"/>
+  <line class="line" x1="120" y1="470" x2="610" y2="460"/>
+  <line class="line" x1="120" y1="470" x2="510" y2="530"/>
+
+  <!-- Member to Practice -->
+  <line class="line" x1="120" y1="470" x2="950" y2="460"/>
+  <line class="line" x1="120" y1="470" x2="1190" y2="460"/>
+  <line class="line" x1="120" y1="470" x2="950" y2="530"/>
+  <line class="line" x1="120" y1="470" x2="1190" y2="530"/>
+  <line class="line" x1="120" y1="470" x2="1070" y2="600"/>
+
+  <!-- Member to Auth: access control/security -->
+  <line class="line" x1="120" y1="470" x2="760" y2="710"/>
+  <line class="line" x1="120" y1="470" x2="1020" y2="710"/>
+
+  <!-- Notes -->
+  <text x="700" y="860" text-anchor="middle" class="note">참고: 일부 유스케이스는 시스템 내부 로직(검색 폴백, 알림 등)을 포함하며, 회원은 방문자 기능을 모두 포함합니다.</text>
+</svg>

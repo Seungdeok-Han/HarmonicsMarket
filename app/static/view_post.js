@@ -393,6 +393,32 @@ function drawPriceChart(labels, prices) {
     },
     options: {
       responsive: true,
+      animation: {
+        duration: 1500,
+        easing: 'easeInOutQuart',
+        onComplete: () => {
+          // 애니메이션 완료 후 추가 동작 가능
+        }
+      },
+      animations: {
+        tension: {
+          duration: 1500,
+          easing: 'easeInOutQuart',
+          from: 0.3,
+          to: 0.2,
+          loop: false
+        },
+        y: {
+          duration: 1500,
+          from: (ctx) => {
+            if (ctx.type === 'data') {
+              const chart = ctx.chart;
+              const yScale = chart.scales.y;
+              return yScale.getPixelForValue(0);
+            }
+          }
+        }
+      },
       plugins: {
         legend: { display: false },
         tooltip: { enabled: true }

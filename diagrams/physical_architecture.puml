@@ -1,0 +1,50 @@
+@startuml
+title Physical Deployment - PythonProject4
+skinparam componentStyle rectangle
+
+node "Users" as users
+
+cloud "CloudFront CDN" as cdn
+
+node "ALB / WAF" as alb
+
+node "App Cluster (ECS/EKS)" as appcluster {
+  component "Nginx" as nginx
+  component "Gunicorn (Flask)" as gunicorn
+}
+
+node "Background Workers" as workers {
+  component "Celery Workers" as celery
+  component "Redis / Queue" as redis
+}
+
+database "RDS (MySQL/Aurora) - Multi-AZ" as rds
+storage "S3 (uploads, static)" as s3
+artifact "ECR / Docker Registry" as ecr
+monitor "Monitoring / Logs" as monitor
+
+users -> cdn : HTTP/HTTPS
+cdn -> alb : HTTP/HTTPS
+alb -> nginx : HTTP
+nginx -> gunicorn : WSGI
+gunicorn -> rds : SQL
+gunicorn -> s3 : PUT/GET (uploads)
+gunicorn -> redis : cache/session
+celery -> redis : queue
+celery -> s3 : process/upload
+monitor <- gunicorn : metrics/logs
+monitor <- celery : metrics/logs
+
+ecr -> appcluster : Docker images
+
+note right of rds
+  - Multi-AZ primary + sync replica
+  - Automated snapshots, PITR
+end note
+
+note left of s3
+  - Public assets via CloudFront
+  - Versioning & lifecycle rules
+end note
+
+@enduml

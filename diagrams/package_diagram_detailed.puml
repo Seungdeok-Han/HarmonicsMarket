@@ -1,0 +1,101 @@
+@startuml
+title Package Diagram - Detailed (PythonProject4)
+skinparam packageStyle rectangle
+
+' Root / top-level files
+package "Root Files" {
+  [run.py]
+  [config.py]
+  [requirements.txt]
+  [REQUIREMENTS.md]
+  [youtub_api.env]
+}
+
+package "app" {
+  package "models" {
+    class BrandInfo
+    class InstrumentPost
+    class User
+    class Comment
+    class Like
+    class MyInstrument
+    class GenreTag
+  }
+
+  package "routes" {
+    [routes.py]
+    [routes_auth.py]
+    [user.py]
+  }
+
+  package "static/templates" {
+    [templates/]
+    [static/]
+  }
+
+  package "migrations" {
+    [migrations/versions]
+    [alembic.ini]
+  }
+
+  package "services" {
+    [PostService]
+    [FeedService]
+    [AuthService]
+  }
+
+  package "repositories" {
+    [PostRepository]
+    [UserRepository]
+  }
+
+  package "adapters" {
+    [YouTubeAdapter]
+  }
+}
+
+package "scripts" {
+  [scripts/render_plantuml.py]
+  [scripts/generate_pdf_from_md.py]
+}
+
+package "diagrams" {
+  [*.puml]
+  [*.png|*.svg]
+}
+
+package "WebApplication1 (C#)" {
+  [WebApplication1.csproj]
+  [Program.cs]
+}
+
+' Relationships / dependencies
+[run.py] --> [app]
+[config.py] --> [app]
+[app] --> [scripts]
+[app] --> [diagrams]
+[routes.py] ..> [services]
+[routes.py] ..> [repositories]
+[routes_auth.py] ..> [AuthService]
+[PostService] --> [PostRepository]
+[FeedService] --> [PostRepository]
+[PostService] --> [YouTubeAdapter]
+[models] ..> [migrations]
+[scripts] --> [diagrams]
+
+' External systems
+package "External" {
+  [YouTube API]
+  [Database]
+}
+
+[YouTubeAdapter] --> [YouTube API]
+[PostRepository] --> [Database]
+
+note top of app
+  이 다이어그램은 프로젝트의 주요 패키지와
+  대표 클래스/모듈을 요약합니다.
+  세부 클래스의 필드/관계는 class_diagram에서 확인하세요.
+end note
+
+@enduml

@@ -3,118 +3,223 @@
 
 {% block content %}
 <div class="container my-5">
-    <h2 class="mb-4">🙋 내 게시글</h2>
-    <div class="card shadow-sm mb-5">
-        <div class="card-body">
+    <!-- Nav Tabs for switching between sections -->
+    <ul class="nav nav-tabs mb-4" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link {% if request.args.get('tab','instrument')=='instrument' %}active{% endif %}" id="instrument-tab" data-bs-toggle="tab" data-bs-target="#instrument-pane" type="button" role="tab" aria-controls="instrument-pane" aria-selected="{% if request.args.get('tab','instrument')=='instrument' %}true{% else %}false{% endif %}">
+          중고 거래 글 ({{ my_posts|length }})
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link {% if request.args.get('tab')=='sns' %}active{% endif %}" id="sns-tab" data-bs-toggle="tab" data-bs-target="#sns-pane" type="button" role="tab" aria-controls="sns-pane" aria-selected="{% if request.args.get('tab')=='sns' %}true{% else %}false{% endif %}">
+          SNS 글 ({{ my_sns_posts|length }})
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link {% if request.args.get('tab')=='practice' %}active{% endif %}" id="practice-tab" data-bs-toggle="tab" data-bs-target="#practice-pane" type="button" role="tab" aria-controls="practice-pane" aria-selected="{% if request.args.get('tab')=='practice' %}true{% else %}false{% endif %}">
+          <i class="bi bi-stars"></i> 연습 기록
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link {% if request.args.get('tab')=='liked' %}active{% endif %}" id="liked-tab" data-bs-toggle="tab" data-bs-target="#liked-pane" type="button" role="tab" aria-controls="liked-pane" aria-selected="{% if request.args.get('tab')=='liked' %}true{% else %}false{% endif %}">
+          좋아요한 글 ({{ liked_posts|length }})
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link {% if request.args.get('tab')=='gear' %}active{% endif %}" id="gear-tab" data-bs-toggle="tab" data-bs-target="#gear-pane" type="button" role="tab" aria-controls="gear-pane" aria-selected="{% if request.args.get('tab')=='gear' %}true{% else %}false{% endif %}">
+          내 악기 ({{ my_instruments|length }})
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <!-- 중고 거래 글 탭 -->
+      <div class="tab-pane fade {% if request.args.get('tab','instrument')=='instrument' %}show active{% endif %}" id="instrument-pane" role="tabpanel" aria-labelledby="instrument-tab">
+        <div class="card shadow-sm">
+          <div class="card-body">
             {% if my_posts %}
-                <ul class="list-group list-group-flush">
-                    {% for post in my_posts %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <a href="{{ url_for('main.view_post', post_id=post.id) }}">
-                                {{ post.title }}
-                            </a>
-                            <span class="text-muted">{{ post.model_name }} / {{ post.price|int }}만원</span>
-                        </li>
-                    {% endfor %}
-                </ul>
+              <ul class="list-group list-group-flush">
+                {% for post in my_posts %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <a href="{{ url_for('main.view_post', post_id=post.id) }}">{{ post.title }}</a>
+                    <span class="text-muted">{{ post.model_name }} / {{ post.price|int }}만원</span>
+                  </li>
+                {% endfor %}
+              </ul>
             {% else %}
-                <p class="text-muted">작성한 글이 없습니다.</p>
+              <p class="text-muted">작성한 중고 거래 글이 없습니다.</p>
             {% endif %}
+          </div>
         </div>
-    </div>
+      </div>
 
-    <h3 class="mb-3">❤️ 좋아요한 글</h3>
-    <div class="card shadow-sm">
-        <div class="card-body">
+      <!-- SNS 글 탭 -->
+      <div class="tab-pane fade {% if request.args.get('tab')=='sns' %}show active{% endif %}" id="sns-pane" role="tabpanel" aria-labelledby="sns-tab">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            {% if my_sns_posts %}
+              {% for post in my_sns_posts %}
+                <div class="mb-4 pb-4 border-bottom">
+                  {% if post.image %}
+                    <img src="{{ url_for('static', filename='uploads/' ~ post.image) }}" alt="SNS Post" class="img-fluid rounded mb-2" style="max-height:300px; width:100%; object-fit:cover;">
+                  {% endif %}
+                  <p class="text-muted small">{{ post.time_ago }}</p>
+                  <p>{{ post.caption }}</p>
+                  <small class="text-muted">❤️ {{ post.like_count }} · 💬 {{ post.comments|length }}</small>
+                </div>
+              {% endfor %}
+            {% else %}
+              <p class="text-muted">작성한 SNS 글이 없습니다.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- 연습 기록 탭 -->
+      <div class="tab-pane fade {% if request.args.get('tab')=='practice' %}show active{% endif %}" id="practice-pane" role="tabpanel" aria-labelledby="practice-tab">
+        <div class="row mb-4">
+          <div class="col-md-6 mb-3">
+            <div class="card shadow-sm border-0 h-100">
+              <div class="card-body">
+                <h5 class="card-title mb-3">
+                  <i class="bi bi-folder-open text-primary"></i> 저장된 연습 플랜
+                </h5>
+                <p class="text-muted">AI가 추천한 곡과 주법을 저장하고 진행도를 관리하세요</p>
+                <a href="{{ url_for('main.my_practice_list') }}" class="btn btn-primary">
+                  <i class="bi bi-eye"></i> 플랜 보기
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <div class="card shadow-sm border-0 h-100">
+              <div class="card-body">
+                <h5 class="card-title mb-3">
+                  <i class="bi bi-journal-text text-primary"></i> 연습 일지
+                </h5>
+                <p class="text-muted">매일의 연습을 기록하고 성장을 추적하세요</p>
+                <a href="{{ url_for('main.practice_log') }}" class="btn btn-primary">
+                  <i class="bi bi-pencil"></i> 일지 작성
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 좋아요한 글 탭 -->
+      <div class="tab-pane fade {% if request.args.get('tab')=='liked' %}show active{% endif %}" id="liked-pane" role="tabpanel" aria-labelledby="liked-tab">
+        <div class="card shadow-sm">
+          <div class="card-body">
             {% if liked_posts %}
-                <ul class="list-group list-group-flush">
-                    {% for post in liked_posts %}
-                        <li class="list-group-item">
-                            <a href="{{ url_for('main.view_post', post_id=post.id) }}">{{ post.title }}</a>
-                        </li>
-                    {% endfor %}
-                </ul>
+              <ul class="list-group list-group-flush">
+                {% for post in liked_posts %}
+                  <li class="list-group-item">
+                    <a href="{{ url_for('main.view_post', post_id=post.id) }}">{{ post.title }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
             {% else %}
-                <p class="text-muted">좋아요한 글이 없습니다.</p>
+              <p class="text-muted">좋아요한 글이 없습니다.</p>
             {% endif %}
+          </div>
         </div>
-    </div>
+      </div>
 
-    <h2 class="mb-4 mt-5">My Gear</h2>
-    <form method="POST" enctype="multipart/form-data" class="card p-4 mb-5 shadow-sm">
-        <div class="row g-3 align-items-end">
+      <!-- 내 악기 탭 -->
+      <div class="tab-pane fade {% if request.args.get('tab')=='gear' %}show active{% endif %}" id="gear-pane" role="tabpanel" aria-labelledby="gear-tab">
+        <form method="POST" enctype="multipart/form-data" class="card p-4 mb-5 shadow-sm">
+          <div class="row g-3 align-items-end">
             <div class="col-md-4">
-                <label for="brand" class="form-label">제조사</label>
-                {% if brands and brands|length > 0 %}
-                <select class="form-select" id="brand" name="brand" required>
-                    <option value="" disabled selected>제조사 선택</option>
-                    {% for brand in brands %}
-                        <option value="{{ brand.name }}">{{ brand.name }}</option>
-                    {% endfor %}
-                </select>
-                {% else %}
-                <select class="form-select" id="brand" name="brand" required disabled>
-                    <option value="" selected>등록된 브랜드 없음</option>
-                </select>
-                {% endif %}
+              <label for="brand" class="form-label">제조사</label>
+              {% if brands and brands|length > 0 %}
+              <select class="form-select" id="brand" name="brand" required>
+                <option value="" disabled selected>제조사 선택</option>
+                {% for brand in brands %}
+                  <option value="{{ brand.name }}">{{ brand.name }}</option>
+                {% endfor %}
+              </select>
+              {% else %}
+              <select class="form-select" id="brand" name="brand" required disabled>
+                <option value="" selected>등록된 브랜드 없음</option>
+              </select>
+              {% endif %}
             </div>
             <div class="col-md-4">
-                <label for="model_name" class="form-label">모델명</label>
-                <input type="text" class="form-control" id="model_name" name="model_name" list="model-list" required>
-                <datalist id="model-list"></datalist>
+              <label for="model_name" class="form-label">모델명</label>
+              <input type="text" class="form-control" id="model_name" name="model_name" list="model-list" required>
+              <datalist id="model-list"></datalist>
             </div>
             <div class="col-md-4">
-                <label for="images" class="form-label">사진 업로드</label>
-                <input class="form-control" type="file" id="images" name="images[]" multiple required>
+              <label for="images" class="form-label">사진 업로드</label>
+              <input class="form-control" type="file" id="images" name="images[]" multiple required>
             </div>
-        </div>
-        <div class="mt-3">
+          </div>
+          <div class="mt-3">
             <label for="description" class="form-label">설명</label>
             <textarea class="form-control" id="description" name="description" rows="2"></textarea>
-        </div>
-        <div class="mt-3 text-end">
+          </div>
+          <div class="mt-3 text-end">
             <button type="submit" class="btn btn-success">등록하기</button>
-        </div>
-    </form>
+          </div>
+        </form>
 
-    <h4 class="mb-3">내가 보유중인 악기 목록</h4>
-    <div class="row">
-        {% for instrument in my_instruments %}
-        <div class="col-md-6 col-lg-4 mb-4">
+        <h5 class="mb-3">등록된 악기 목록</h5>
+        <div class="row">
+          {% for instrument in my_instruments %}
+          <div class="col-md-6 col-lg-4 mb-4">
             <div class="card h-100 shadow-sm">
-                {% if instrument.images and instrument.images|length > 0 %}
-                <div id="carousel-{{ instrument.id }}" class="carousel slide" data-bs-ride="carousel">
-                  <div class="carousel-inner">
-                    {% for filename in instrument.images %}
-                    <div class="carousel-item {% if loop.index0 == 0 %}active{% endif %}">
-                      <img src="{{ url_for('static', filename='uploads/' + filename) }}" class="d-block w-100" style="max-height:220px; object-fit:cover;" alt="악기사진">
-                    </div>
-                    {% endfor %}
-                  </div>
-                  {% if instrument.images|length > 1 %}
-                  <button class="carousel-control-prev" type="button" data-bs-target="#carousel-{{ instrument.id }}" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon"></span>
-                  </button>
-                  <button class="carousel-control-next" type="button" data-bs-target="#carousel-{{ instrument.id }}" data-bs-slide="next">
-                    <span class="carousel-control-next-icon"></span>
-                  </button>
-                  {% endif %}
+              {% if instrument.images and instrument.images|length > 0 %}
+              <div class="position-relative">
+                {% if instrument.is_featured %}
+                <div class="position-absolute top-0 start-0 m-2" title="대표 악기">
+                  <i class="bi bi-crown-fill" style="color:#f59e0b; font-size:1.4rem;"></i>
                 </div>
                 {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ instrument.brand }} {{ instrument.model_name }}</h5>
-                    <p class="card-text">{{ instrument.description }}</p>
+                <div id="carousel-{{ instrument.id }}" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                  {% for filename in instrument.images %}
+                  <div class="carousel-item {% if loop.index0 == 0 %}active{% endif %}">
+                    <img src="{{ url_for('static', filename='uploads/' + filename) }}" class="d-block w-100" style="max-height:220px; object-fit:cover;" alt="악기사진">
+                  </div>
+                  {% endfor %}
                 </div>
-                <div class="card-footer text-end">
-                    <form action="{{ url_for('main.delete_my_instrument', instrument_id=instrument.id) }}" method="POST" class="d-inline">
-                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
-                    </form>
+                {% if instrument.images|length > 1 %}
+                <button class="carousel-control-prev" type="button" data-bs-target="#carousel-{{ instrument.id }}" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carousel-{{ instrument.id }}" data-bs-slide="next">
+                  <span class="carousel-control-next-icon"></span>
+                </button>
+                {% endif %}
                 </div>
+              </div>
+              {% endif %}
+              <div class="card-body">
+                <h5 class="card-title">{{ instrument.brand }} {{ instrument.model_name }}</h5>
+                <p class="card-text">{{ instrument.description }}</p>
+              </div>
+              <div class="card-footer text-end">
+                {% if instrument.is_featured %}
+                  <span class="badge bg-warning text-dark me-2">대표</span>
+                {% else %}
+                  <form action="{{ url_for('main.feature_my_instrument', instrument_id=instrument.id) }}" method="POST" class="d-inline me-2">
+                    <button type="submit" class="btn btn-sm btn-outline-primary" title="대표악기로 등록">대표 지정</button>
+                  </form>
+                {% endif %}
+                <form action="{{ url_for('main.delete_my_instrument', instrument_id=instrument.id) }}" method="POST" class="d-inline">
+                  <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('정말 삭제하시겠습니까?')" title="삭제">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+              </div>
             </div>
+          </div>
+          {% else %}
+          <div class="col-12 text-center text-muted">아직 등록된 악기가 없습니다.</div>
+          {% endfor %}
         </div>
-        {% else %}
-        <div class="col-12 text-center text-muted">아직 등록된 악기가 없습니다.</div>
-        {% endfor %}
+      </div>
     </div>
 </div>
 <script>

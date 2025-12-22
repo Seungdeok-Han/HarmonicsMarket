@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900">
+  <style>
+    .title { font: 700 18px sans-serif; fill: #222; }
+    .note { font: 500 12px sans-serif; fill: #666; }
+    .lifeline { stroke: #333; stroke-width: 2; }
+    .box { fill: #f7f7f7; stroke: #333; stroke-width: 2; }
+    .actor { fill: #ffffff; stroke: #333; stroke-width: 2; }
+    .msg { stroke: #222; stroke-width: 2; marker-end: url(#arrow); }
+    .label { font: 500 14px sans-serif; fill: #222; }
+    .activation { fill: #cfe8ff; stroke: #333; stroke-width: 1; }
+    .return { stroke: #777; stroke-dasharray: 6 4; marker-end: url(#arrowGray); }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#222" />
+    </marker>
+    <marker id="arrowGray" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#777" />
+    </marker>
+  </defs>
+
+  <text x="700" y="35" text-anchor="middle" class="title">시퀀스 다이어그램: AI 기반 연습 추천 생성·저장·진행도 업데이트</text>
+  <text x="700" y="60" text-anchor="middle" class="note">배우: 회원 / 프론트엔드 / Flask 앱(라우트) / PracticeService / Gemini API / DB</text>
+
+  <!-- Lifeline headers -->
+  <g>
+    <rect class="actor" x="40" y="90" width="120" height="40" rx="6"/>
+    <text class="label" x="100" y="115" text-anchor="middle">회원(User)</text>
+
+    <rect class="box" x="220" y="90" width="150" height="40" rx="6"/>
+    <text class="label" x="295" y="115" text-anchor="middle">프론트엔드(UI)</text>
+
+    <rect class="box" x="420" y="90" width="180" height="40" rx="6"/>
+    <text class="label" x="510" y="115" text-anchor="middle">Flask 앱(라우트)</text>
+
+    <rect class="box" x="640" y="90" width="180" height="40" rx="6"/>
+    <text class="label" x="730" y="115" text-anchor="middle">PracticeService</text>
+
+    <rect class="box" x="860" y="90" width="150" height="40" rx="6"/>
+    <text class="label" x="935" y="115" text-anchor="middle">Gemini API</text>
+
+    <rect class="box" x="1060" y="90" width="150" height="40" rx="6"/>
+    <text class="label" x="1135" y="115" text-anchor="middle">DB(SQLAlchemy)</text>
+  </g>
+
+  <!-- Lifelines -->
+  <line class="lifeline" x1="100" y1="130" x2="100" y2="820" />
+  <line class="lifeline" x1="295" y1="130" x2="295" y2="820" />
+  <line class="lifeline" x1="510" y1="130" x2="510" y2="820" />
+  <line class="lifeline" x1="730" y1="130" x2="730" y2="820" />
+  <line class="lifeline" x1="935" y1="130" x2="935" y2="820" />
+  <line class="lifeline" x1="1135" y1="130" x2="1135" y2="820" />
+
+  <!-- 1. 사용자 입력 & 추천 요청 -->
+  <line class="msg" x1="100" y1="170" x2="295" y2="170" />
+  <text class="label" x="198" y="165" text-anchor="middle">경력/장르/목표/특정 곡 입력</text>
+
+  <line class="msg" x1="295" y1="210" x2="510" y2="210" />
+  <text class="label" x="402" y="205" text-anchor="middle">POST /guitar-practice</text>
+  <rect class="activation" x="500" y="210" width="20" height="80" />
+
+  <line class="msg" x1="510" y1="250" x2="730" y2="250" />
+  <text class="label" x="620" y="245" text-anchor="middle">get_ai_practice_recommendation()</text>
+  <rect class="activation" x="720" y="250" width="20" height="200" />
+
+  <line class="msg" x1="730" y1="290" x2="935" y2="290" />
+  <text class="label" x="832" y="285" text-anchor="middle">프롬프트 생성·요청</text>
+  <rect class="activation" x="925" y="290" width="20" height="100" />
+
+  <line class="return" x1="935" y1="360" x2="730" y2="360" />
+  <text class="label" x="832" y="355" text-anchor="middle">추천 결과(JSON: 곡·기술)</text>
+
+  <line class="return" x1="730" y1="430" x2="510" y2="430" />
+  <text class="label" x="620" y="425" text-anchor="middle">추천 데이터 반환</text>
+
+  <line class="return" x1="510" y1="470" x2="295" y2="470" />
+  <text class="label" x="402" y="465" text-anchor="middle">UI에 결과 표시</text>
+
+  <!-- 2. 추천 저장 -->
+  <line class="msg" x1="295" y1="520" x2="510" y2="520" />
+  <text class="label" x="402" y="515" text-anchor="middle">AJAX POST /practice/save</text>
+  <rect class="activation" x="500" y="520" width="20" height="170" />
+
+  <line class="msg" x1="510" y1="560" x2="1135" y2="560" />
+  <text class="label" x="822" y="555" text-anchor="middle">PracticeRecommendation/ Song/ Technique 저장</text>
+  <rect class="activation" x="1125" y="560" width="20" height="80" />
+
+  <line class="return" x1="1135" y1="630" x2="510" y2="630" />
+  <text class="label" x="822" y="625" text-anchor="middle">commit 성공</text>
+
+  <line class="return" x1="510" y1="670" x2="295" y2="670" />
+  <text class="label" x="402" y="665" text-anchor="middle">저장 성공 응답</text>
+
+  <!-- 3. 진행 상태 업데이트 -->
+  <line class="msg" x1="295" y1="720" x2="510" y2="720" />
+  <text class="label" x="402" y="715" text-anchor="middle">POST /practice/update-status</text>
+  <rect class="activation" x="500" y="720" width="20" height="80" />
+
+  <line class="msg" x1="510" y1="750" x2="1135" y2="750" />
+  <text class="label" x="822" y="745" text-anchor="middle">곡/기술 status 변경</text>
+
+  <line class="return" x1="1135" y1="790" x2="510" y2="790" />
+  <text class="label" x="822" y="785" text-anchor="middle">OK</text>
+
+  <line class="return" x1="510" y1="820" x2="295" y2="820" />
+  <text class="label" x="402" y="815" text-anchor="middle">UI 업데이트(시각적 피드백)</text>
+</svg>

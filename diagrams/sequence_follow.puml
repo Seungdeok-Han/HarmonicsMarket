@@ -1,0 +1,25 @@
+@startuml Follow_Sequence
+actor UserA as Follower
+actor UserB as Followed
+participant Browser
+participant AppServer
+participant UserService
+participant UserRepository
+participant DB
+
+Follower -> Browser: click 'Follow' on UserB profile
+Browser -> AppServer: POST /user/{id}/follow
+AppServer -> UserService: follow(user_id=UserB, follower_id=UserA)
+UserService -> UserRepository: addFollower(UserB, UserA)
+UserRepository -> DB: INSERT follower relation
+DB --> UserRepository: result
+UserRepository --> UserService: success
+UserService -> FeedPublisher: attach FollowerObserver for UserA (optional)
+UserService --> AppServer: success
+AppServer --> Browser: JSON { success: true }
+
+note right of UserService
+  Follow action persists relation and (옵션) 구독자 옵저버 등록
+end note
+
+@enduml

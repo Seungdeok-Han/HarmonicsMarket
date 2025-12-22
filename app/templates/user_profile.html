@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ user.username }}의 프로필{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <div class="card mb-4">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <div>
+        <h3 class="mb-2">{{ user.username }}</h3>
+        <div class="text-muted small">
+          <span class="me-3">팔로워 <strong id="followersCount">0</strong></span>
+          <span>팔로우 <strong id="followingCount">0</strong></span>
+        </div>
+      </div>
+      <div>
+        {% if current_user.is_authenticated and current_user.id != user.id %}
+          <button class="btn btn-primary me-2" id="followBtn">팔로우</button>
+        {% endif %}
+        <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">← 목록으로</a>
+      </div>
+    </div>
+    <div class="card-body">
+      <p class="text-muted">이 사용자가 작성한 중고 거래 글과 SNS 글을 모두 확인할 수 있습니다.</p>
+    </div>
+  </div>
+
+  <!-- Nav Tabs for switching between sections -->
+  <ul class="nav nav-tabs mb-4" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="instrument-tab" data-bs-toggle="tab" data-bs-target="#instrument-pane" type="button" role="tab" aria-controls="instrument-pane" aria-selected="true">
+        중고 거래 ({{ instrument_posts|length }})
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="sns-tab" data-bs-toggle="tab" data-bs-target="#sns-pane" type="button" role="tab" aria-controls="sns-pane" aria-selected="false">
+        SNS ({{ sns_posts|length }})
+      </button>
+    </li>
+  </ul>
+
+  <!-- Tab Content -->
+  <div class="tab-content">
+    <!-- 중고 거래 탭 -->
+    <div class="tab-pane fade show active" id="instrument-pane" role="tabpanel" aria-labelledby="instrument-tab">
+      {% if instrument_posts and instrument_posts|length > 0 %}
+        <div class="row">
+          {% for post in instrument_posts %}
+            <div class="col-md-6 mb-3">
+              <div class="card h-100 shadow-sm">
+                {% if post.images and post.images|length > 0 %}
+                  <img src="{{ url_for('static', filename='uploads/' ~ post.images[0]) }}" class="card-img-top" style="height:200px; object-fit:cover;" alt="{{ post.title }}">
+                {% else %}
+                  <div class="card-img-top bg-light" style="height:200px; display:flex; align-items:center; justify-content:center; color:#ccc;">
+                    📷 이미지 없음
+                  </div>
+                {% endif %}
+                <div class="card-body">
+                  <h5 class="card-title">{{ post.title }}</h5>
+                  <p class="card-text text-muted small">{{ post.model_name }} {% if post.brand %} ({{ post.brand.name }}){% endif %}</p>
+                  <p class="card-text">
+                    {% if post.price %}<strong>{{ "%.0f"|format(post.price) }}만원</strong>{% else %}<span class="text-muted">가격 미정</span>{% endif %}
+                  </p>
+                  <p class="card-text small">
+                    {% if post.status == 'available' %}
+                      <span class="badge bg-success">거래 가능</span>
+                    {% elif post.status == 'reserved' %}
+                      <span class="badge bg-warning text-dark">거래중</span>
+                    {% else %}
+                      <span class="badge bg-secondary">거래 완료</span>
+                    {% endif %}
+                  </p>
+                  <a href="{{ url_for('main.view_post', post_id=post.id) }}" class="btn btn-sm btn-primary">자세히 보기</a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-center text-muted py-5">
+          <p>작성한 중고 거래 글이 없습니다.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- SNS 탭 -->
+    <div class="tab-pane fade" id="sns-pane" role="tabpanel" aria-labelledby="sns-tab">
+      {% if sns_posts and sns_posts|length > 0 %}
+        {% for p in sns_posts %}
+          <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+              {% if p.image %}
+                <img src="{{ url_for('static', filename='uploads/' ~ p.image) }}" alt="SNS Post" class="img-fluid rounded mb-3" style="max-height:400px; width:100%; object-fit:cover;">
+              {% endif %}
+              <p class="text-muted small">{{ p.time_ago }}</p>
+              <p class="card-text">{{ p.caption }}</p>
+              <div class="d-flex gap-2 align-items-center">
+                <small class="text-muted">❤️ {{ p.like_count }}</small>
+                <small class="text-muted">💬 {{ p.comments|length }}</small>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="text-center text-muted py-5">
+          <p>작성한 SNS 글이 없습니다.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+  {% if current_user.is_authenticated and current_user.id != user.id %}
+  const userId = {{ user.id }};
+  const followBtn = document.getElementById('followBtn');
+  
+  // 팔로우 상태와 통계 로드
+  async function loadFollowStatus() {
+    try {
+      const res = await fetch(`/user/${userId}/is-following`);
+      const data = await res.json();
+      
+      document.getElementById('followersCount').textContent = data.followers_count;
+      document.getElementById('followingCount').textContent = data.following_count;
+      
+      if (data.following) {
+        followBtn.textContent = '팔로우 취소';
+        followBtn.classList.remove('btn-primary');
+        followBtn.classList.add('btn-secondary');
+      } else {
+        followBtn.textContent = '팔로우';
+        followBtn.classList.remove('btn-secondary');
+        followBtn.classList.add('btn-primary');
+      }
+    } catch (e) {
+      console.error('Follow status load error:', e);
+    }
+  }
+  
+  // 팔로우 버튼 클릭
+  followBtn.addEventListener('click', async () => {
+    try {
+      const res = await fetch(`/user/${userId}/follow`, {method: 'POST'});
+      const data = await res.json();
+      
+      if (data.following) {
+        followBtn.textContent = '팔로우 취소';
+        followBtn.classList.remove('btn-primary');
+        followBtn.classList.add('btn-secondary');
+      } else {
+        followBtn.textContent = '팔로우';
+        followBtn.classList.remove('btn-secondary');
+        followBtn.classList.add('btn-primary');
+      }
+      
+      document.getElementById('followersCount').textContent = data.followers_count;
+    } catch (e) {
+      console.error('Follow error:', e);
+      alert('팔로우 처리 중 오류가 발생했습니다.');
+    }
+  });
+  
+  // 페이지 로드 시 상태 확인
+  loadFollowStatus();
+  {% else %}
+  // 통계만 로드 (비로그인 또는 자신의 프로필)
+  async function loadStats() {
+    try {
+      const res = await fetch(`/user/{{ user.id }}/stats`);
+      const data = await res.json();
+      document.getElementById('followersCount').textContent = data.followers_count;
+      document.getElementById('followingCount').textContent = data.following_count;
+    } catch (e) {
+      console.error('Stats load error:', e);
+    }
+  }
+  loadStats();
+  {% endif %}
+</script>
+{% endblock %}

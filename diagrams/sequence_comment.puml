@@ -1,0 +1,29 @@
+@startuml Comment_Sequence
+actor User
+participant Browser
+participant AppServer
+participant PostService
+participant PostRepository
+participant CommentRepository
+participant DB
+
+User -> Browser: enter comment and submit
+Browser -> AppServer: POST /feed/{id}/comment { content }
+AppServer -> CommentCommand: new CommentCommand(user_id, post_id, content)
+CommentCommand -> PostService: execute()
+PostService -> CommentRepository: save(comment)
+CommentRepository -> DB: INSERT Comment
+DB --> CommentRepository: comment_id
+CommentRepository --> PostService: saved comment
+PostService -> PostRepository: incrementCommentCount(post_id)
+PostRepository -> DB: UPDATE post.comments_count
+PostService -> FeedPublisher: notify(event: comment)
+FeedPublisher -> FollowerObserver: update(event)
+PostService --> AppServer: saved comment info
+AppServer --> Browser: JSON { success: true, comment_id: id }
+
+note right of PostService
+  CommentCommand (Command) + PostService(Facade) + CommentRepository
+end note
+
+@enduml

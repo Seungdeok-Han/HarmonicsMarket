@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1200" viewBox="0 0 1600 1200">
+  <style>
+    .title { font: 700 18px sans-serif; fill: #222; }
+    .class { fill: #fffdf7; stroke: #333; stroke-width: 2; }
+    .header { fill: #f4e9c9; stroke: #333; stroke-width: 2; }
+    .label { font: 600 14px sans-serif; fill: #222; }
+    .attr { font: 500 12px sans-serif; fill: #333; }
+    .note { font: 500 12px sans-serif; fill: #666; }
+    .assoc { stroke: #444; stroke-width: 2; }
+    .arrow { marker-end: url(#arrow); }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#444" />
+    </marker>
+  </defs>
+
+  <text x="800" y="40" text-anchor="middle" class="title">클래스 다이어그램: 주요 모델과 관계</text>
+  <text x="800" y="65" text-anchor="middle" class="note">도메인: 거래, SNS, 메시지, 팔로우/알림, 연습 추천/진행도/일지</text>
+
+  <!-- User -->
+  <g transform="translate(60, 120)">
+    <rect class="header" x="0" y="0" width="220" height="30" rx="6"/>
+    <text class="label" x="110" y="20" text-anchor="middle">User</text>
+    <rect class="class" x="0" y="30" width="220" height="120" rx="6"/>
+    <text class="attr" x="10" y="55">id: Integer</text>
+    <text class="attr" x="10" y="75">username: String(64)</text>
+    <text class="attr" x="10" y="95">password_hash: String(128)</text>
+    <text class="attr" x="10" y="115">likes: Relationship</text>
+  </g>
+
+  <!-- BrandInfo -->
+  <g transform="translate(320, 120)">
+    <rect class="header" x="0" y="0" width="220" height="30" rx="6"/>
+    <text class="label" x="110" y="20" text-anchor="middle">BrandInfo</text>
+    <rect class="class" x="0" y="30" width="220" height="120" rx="6"/>
+    <text class="attr" x="10" y="55">id: Integer</text>
+    <text class="attr" x="10" y="75">name: String</text>
+    <text class="attr" x="10" y="95">country: String</text>
+  </g>
+
+  <!-- InstrumentPost -->
+  <g transform="translate(580, 120)">
+    <rect class="header" x="0" y="0" width="280" height="30" rx="6"/>
+    <text class="label" x="140" y="20" text-anchor="middle">InstrumentPost</text>
+    <rect class="class" x="0" y="30" width="280" height="160" rx="6"/>
+    <text class="attr" x="10" y="55">id: Integer</text>
+    <text class="attr" x="10" y="75">title: String(150)</text>
+    <text class="attr" x="10" y="95">brand_id: FK(BrandInfo)</text>
+    <text class="attr" x="10" y="115">model_name: String(100)</text>
+    <text class="attr" x="10" y="135">shape: String(100), condition: Int</text>
+    <text class="attr" x="10" y="155">price: Numeric(10,2), images: JSON</text>
+    <text class="attr" x="10" y="175">user_id: FK(User), views, status</text>
+  </g>
+
+  <!-- GenreTag -->
+  <g transform="translate(900, 120)">
+    <rect class="header" x="0" y="0" width="220" height="30" rx="6"/>
+    <text class="label" x="110" y="20" text-anchor="middle">GenreTag</text>
+    <rect class="class" x="0" y="30" width="220" height="120" rx="6"/>
+    <text class="attr" x="10" y="55">id: Integer</text>
+    <text class="attr" x="10" y="75">name: String</text>
+  </g>
+
+  <!-- MyInstrument -->
+  <g transform="translate(1160, 120)">
+    <rect class="header" x="0" y="0" width="240" height="30" rx="6"/>
+    <text class="label" x="120" y="20" text-anchor="middle">MyInstrument</text>
+    <rect class="class" x="0" y="30" width="240" height="140" rx="6"/>
+    <text class="attr" x="10" y="55">id: Integer</text>
+    <text class="attr" x="10" y="75">user_id: FK(User)</text>
+    <text class="attr" x="10" y="95">brand: String, model: String</text>
+    <text class="attr" x="10" y="115">is_featured: Boolean</text>
+  </g>
+
+  <!-- Comment -->
+  <g transform="translate(60, 340)">
+    <rect class="header" x="0" y="0" width="240" height="30" rx="6"/>
+    <text class="label" x="120" y="20" text-anchor="middle">Comment</text>
+    <rect class="class" x="0" y="30" width="240" height="160" rx="6"/>
+    <text class="attr" x="10" y="55">id: Integer</text>
+    <text class="attr" x="10" y="75">post_id: FK(InstrumentPost)</text>
+    <text class="attr" x="10" y="95">user_id: FK(User)</text>
+    <text class="attr" x="10" y="115">content: Text</text>
+    <text class="attr" x="10" y="135">parent_id: FK(Comment?)</text>
+    <text class="attr" x="10" y="155">created_at: DateTime</text>
+  </g>
+
+  <!-- Like -->
+  <g transform="translate(340, 340)">
+    <rect class="header" x="0" y="0" width="220" height="30" rx="6"/>
+    <text class="label" x="110" y="20" text-anchor="middle">Like</text>
+    <rect class="class" x="0" y="30" width="220" height="120" rx="6"/>
+    <text class="attr" x="10" y="55">id: Integer</text>
+    <text class="attr" x="10" y="75">post_id: FK(InstrumentPost)</text>
+    <text class="attr" x="10" y="95">user_id: FK(User)</text>
+  </g>
+
+  <!-- Message -->
+  <g transform="translate(600, 340)">
+    <rect class="header" x="0" y="0" width="240" height="30" rx="6"/>
+    <text class="label" x="120" y="20" text-anchor="middle">Message</text>
+    <rect class="class" x="0" y="30" width="240" height="140" rx="6"/>
+    <text class="attr" x="10" y="55">id: Integer</text>
+    <text class="attr" x="10" y="75">sender_id: FK(User)</text>
+    <text class="attr" x="10" y="95">receiver_id: FK(User)</text>
+    <text class="attr" x="10" y="115">content: Text</text>
+    <text class="attr" x="10" y="135">created_at: DateTime</text>
+  </g>
+
+  <!-- Notification -->
+  <g transform="translate(880, 340)">
+    <rect class="header" x="0" y="0" width="240" height="30" rx="6"/>
+    <text class="label" x="120" y="20" text-anchor="middle">Notification</text>
+    <rect class="class" x="0" y="30" width="240" height="140" rx="6"/>
+    <text class="attr" x="10" y="55">id: Integer</text>
+    <text class="attr" x="10" y="75">user_id: FK(User)</text>
+    <text class="attr" x="10" y="95">message: String</text>
+    <text class="attr" x="10" y="115">is_read: Boolean</text>
+    <text class="attr" x="10" y="135">created_at: DateTime</text>
+  </g>
+
+  <!-- Follow -->
+  <g transform="translate(1160, 340)">
+    <rect class="header" x="0" y="0" width="240" height="30" rx="6"/>
+    <text class="label" x="120" y="20" text-anchor="middle">Follow</text>
+    <rect class="class" x="0" y="30" width="240" height="140" rx="6"/>
+    <text class="attr" x="10" y="55">id: Integer</text>
+    <text class="attr" x="10" y="75">follower_id: FK(User)</text>
+    <text class="attr" x="10" y="95">following_id: FK(User)</text>
+    <text class="attr" x="10" y="115">UNIQUE(follower, following)</text>
+  </g>
+
+  <!-- PracticeRecommendation -->
+  <g transform="translate(60, 580)">
+    <rect class="header" x="0" y="0" width="300" height="30" rx="6"/>
+    <text class="label" x="150" y="20" text-anchor="middle">PracticeRecommendation</text>
+    <rect class="class" x="0" y="30" width="300" height="180" rx="6"/>
+    <text class="attr" x="10" y="55">id: Integer</text>
+    <text class="attr" x="10" y="75">user_id: FK(User)</text>
+    <text class="attr" x="10" y="95">experience: String</text>
+    <text class="attr" x="10" y="115">genre: String, guitar_type: String</text>
+    <text class="attr" x="10" y="135">goals: Text, tips: Text</text>
+    <text class="attr" x="10" y="155">specific_song: String?</text>
+    <text class="attr" x="10" y="175">created_at: DateTime</text>
+  </g>
+
+  <!-- PracticeSong -->
+  <g transform="translate(400, 580)">
+    <rect class="header" x="0" y="0" width="260" height="30" rx="6"/>
+    <text class="label" x="130" y="20" text-anchor="middle">PracticeSong</text>
+    <rect class="class" x="0" y="30" width="260" height="160" rx="6"/>
+    <text class="attr" x="10" y="55">id: Integer</text>
+    <text class="attr" x="10" y="75">rec_id: FK(PracticeRecommendation)</text>
+    <text class="attr" x="10" y="95">song_name: String</text>
+    <text class="attr" x="10" y="115">video_url: String</text>
+    <text class="attr" x="10" y="135">status: Enum(not_started, practicing, completed, paused)</text>
+  </g>
+
+  <!-- PracticeTechnique -->
+  <g transform="translate(700, 580)">
+    <rect class="header" x="0" y="0" width="280" height="30" rx="6"/>
+    <text class="label" x="140" y="20" text-anchor="middle">PracticeTechnique</text>
+    <rect class="class" x="0" y="30" width="280" height="160" rx="6"/>
+    <text class="attr" x="10" y="55">id: Integer</text>
+    <text class="attr" x="10" y="75">rec_id: FK(PracticeRecommendation)</text>
+    <text class="attr" x="10" y="95">technique_name: String</text>
+    <text class="attr" x="10" y="115">description: Text</text>
+    <text class="attr" x="10" y="135">status: Enum(not_started, practicing, completed, paused)</text>
+  </g>
+
+  <!-- PracticeLog -->
+  <g transform="translate(1020, 580)">
+    <rect class="header" x="0" y="0" width="260" height="30" rx="6"/>
+    <text class="label" x="130" y="20" text-anchor="middle">PracticeLog</text>
+    <rect class="class" x="0" y="30" width="260" height="160" rx="6"/>
+    <text class="attr" x="10" y="55">id: Integer</text>
+    <text class="attr" x="10" y="75">user_id: FK(User)</text>
+    <text class="attr" x="10" y="95">date: Date</text>
+    <text class="attr" x="10" y="115">duration_minutes: Integer</text>
+    <text class="attr" x="10" y="135">notes: Text; UNIQUE(user_id, date)</text>
+  </g>
+
+  <!-- Associations -->
+  <!-- User to InstrumentPost -->
+  <line class="assoc arrow" x1="170" y1="250" x2="690" y2="250" />
+  <text class="note" x="430" y="240" text-anchor="middle">User 1 - * InstrumentPost</text>
+
+  <!-- BrandInfo to InstrumentPost -->
+  <line class="assoc arrow" x1="430" y1="250" x2="690" y2="250" />
+  <text class="note" x="560" y="240" text-anchor="middle">BrandInfo 1 - * InstrumentPost</text>
+
+  <!-- InstrumentPost to Comment/Like -->
+  <line class="assoc arrow" x1="720" y1="300" x2="180" y2="380" />
+  <text class="note" x="450" y="335" text-anchor="middle">InstrumentPost 1 - * Comment</text>
+
+  <line class="assoc arrow" x1="720" y1="300" x2="450" y2="380" />
+  <text class="note" x="585" y="355" text-anchor="middle">InstrumentPost 1 - * Like</text>
+
+  <!-- User to Message/Notification/Follow -->
+  <line class="assoc arrow" x1="170" y1="250" x2="720" y2="380" />
+  <text class="note" x="440" y="365" text-anchor="middle">User 1 - * Message (sender/receiver)</text>
+
+  <line class="assoc arrow" x1="170" y1="250" x2="1000" y2="380" />
+  <text class="note" x="620" y="365" text-anchor="middle">User 1 - * Notification</text>
+
+  <line class="assoc arrow" x1="170" y1="250" x2="1280" y2="380" />
+  <text class="note" x="725" y="365" text-anchor="middle">User 1 - * Follow (as follower/following)</text>
+
+  <!-- User to PracticeRecommendation/Log -->
+  <line class="assoc arrow" x1="170" y1="640" x2="210" y2="640" />
+  <text class="note" x="190" y="625" text-anchor="middle">User 1 - * PracticeRecommendation</text>
+
+  <line class="assoc arrow" x1="170" y1="640" x2="1150" y2="640" />
+  <text class="note" x="660" y="625" text-anchor="middle">User 1 - * PracticeLog</text>
+
+  <!-- PracticeRecommendation to Song/Technique -->
+  <line class="assoc arrow" x1="360" y1="640" x2="730" y2="640" />
+  <text class="note" x="545" y="625" text-anchor="middle">PracticeRecommendation 1 - * PracticeSong</text>
+
+  <line class="assoc arrow" x1="360" y1="640" x2="840" y2="640" />
+  <text class="note" x="600" y="665" text-anchor="middle">PracticeRecommendation 1 - * PracticeTechnique</text>
+
+  <!-- MyInstrument relation -->
+  <line class="assoc arrow" x1="170" y1="250" x2="1280" y2="190" />
+  <text class="note" x="725" y="205" text-anchor="middle">User 1 - * MyInstrument</text>
+
+  <text class="note" x="800" y="1160" text-anchor="middle">참고: 관계 다중성은 개념적 표현이며 실제 DB 제약과 일치합니다.</text>
+</svg>

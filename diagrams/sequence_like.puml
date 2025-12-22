@@ -1,0 +1,27 @@
+@startuml Like_Sequence
+actor User
+participant Browser
+participant AppServer
+participant PostService
+participant PostRepository
+participant DB
+
+User -> Browser: click 'Like' on FeedPost
+Browser -> AppServer: POST /feed/{id}/like
+AppServer -> LikeCommand: new LikeCommand(user_id, post_id)
+LikeCommand -> PostService: execute()
+PostService -> PostRepository: toggleLike(post_id, user_id)
+PostRepository -> DB: INSERT or DELETE Like row
+DB --> PostRepository: result
+PostRepository --> PostService: updated like count
+PostService -> FeedPublisher: notify(event: like)
+FeedPublisher -> FollowerObserver: update(event)
+PostService --> AppServer: updated like count
+AppServer --> Browser: JSON { liked: true/false, like_count: N }
+
+note right of PostService
+  LikeCommand encapsulates the action (Command 패턴)
+  PostService는 Facade 역할로 저장/알림을 조정
+end note
+
+@enduml

@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}내 연습 기록{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">
+      <i class="bi bi-folder-open text-primary"></i> 내 연습 기록
+    </h2>
+    <a href="{{ url_for('main.guitar_practice') }}" class="btn btn-primary">
+      <i class="bi bi-plus-lg"></i> 새 추천 받기
+    </a>
+  </div>
+
+  {% if recommendations %}
+  <div class="row">
+    {% for rec in recommendations %}
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+              <h5 class="card-title fw-bold mb-2">
+                {% if rec.specific_song %}
+                  <i class="bi bi-music-note"></i> {{ rec.specific_song }}
+                {% else %}
+                  <i class="bi bi-music-note-list"></i> {{ rec.genre }}
+                {% endif %}
+              </h5>
+              <p class="text-muted small mb-0">
+                <i class="bi bi-calendar3"></i> {{ rec.created_at.strftime('%Y년 %m월 %d일') }}
+              </p>
+            </div>
+            <button class="btn btn-sm btn-outline-danger delete-btn" data-id="{{ rec.id }}">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+
+          <div class="mb-3">
+            <span class="badge bg-light text-dark me-2">
+              <i class="bi bi-clock"></i> {{ rec.experience }}
+            </span>
+            <span class="badge bg-light text-dark">
+              <i class="bi bi-guitar"></i> {{ rec.guitar_type }}
+            </span>
+          </div>
+
+          <div class="mb-3">
+            <small class="text-muted d-block mb-1">추천 곡 {{ rec.songs.count() }}개</small>
+            <div class="progress" style="height: 5px;">
+              {% set completed = rec.songs.filter_by(status='completed').count() %}
+              {% set total = rec.songs.count() %}
+              <div class="progress-bar bg-success" style="width: {{ (completed / total * 100) if total > 0 else 0 }}%"></div>
+            </div>
+            <small class="text-muted">{{ completed }}/{{ total }} 완료</small>
+          </div>
+
+          <div class="d-grid">
+            <a href="{{ url_for('main.practice_detail', rec_id=rec.id) }}" class="btn btn-outline-primary">
+              <i class="bi bi-eye"></i> 상세보기
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-5">
+    <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
+    <h4 class="text-muted mt-3">저장된 연습 기록이 없습니다</h4>
+    <p class="text-muted">AI 추천을 받고 저장해보세요!</p>
+    <a href="{{ url_for('main.guitar_practice') }}" class="btn btn-primary mt-2">
+      <i class="bi bi-stars"></i> 추천 받기
+    </a>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+  // 삭제 기능
+  document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', async function(e) {
+      e.stopPropagation();
+      
+      if (!confirm('이 연습 기록을 삭제하시겠습니까?')) return;
+      
+      const recId = this.dataset.id;
+      
+      try {
+        const response = await fetch(`/practice/delete/${recId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          location.reload();
+        } else {
+          alert('삭제 중 오류가 발생했습니다.');
+        }
+      } catch (error) {
+        console.error('삭제 오류:', error);
+        alert('삭제 중 오류가 발생했습니다.');
+      }
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,990 @@
+{% extends 'base.html' %}
+
+{% block title %}뮤직 피드 — 딩기딩{% endblock %}
+
+{% block content %}
+<style>
+  /* Instagram-like feed styles */
+  .insta-feed h3 { font-size: 1.6rem; }
+  .insta-post { border-radius: .8rem; overflow: hidden; box-shadow: 0 6px 18px rgba(17,17,17,0.06); border: 1px solid rgba(0,0,0,0.04); }
+  .insta-header { display:flex; align-items:center; gap: .75rem; padding: .9rem 1rem; }
+  .insta-avatar { width:40px; height:40px; border-radius:50%; background:#ddd; display:inline-flex; align-items:center; justify-content:center; font-weight:700; color:#444; }
+  .insta-username { font-weight:700; }
+  .insta-time { font-size:.85rem; color:#6c757d; }
+  .insta-delete-btn { margin-left: auto; }
+  .insta-image { width:100%; height:520px; object-fit:cover; display:block; background:#f3f3f3; }
+  .insta-actions { padding: .65rem 1rem; display:flex; gap:1rem; align-items:center; }
+  .insta-actions .bi { font-size:1.25rem; cursor:pointer; }
+  .insta-likes { padding: 0 1rem 0.5rem 1rem; font-weight:600; }
+  .insta-caption { padding: 0 1rem 1rem 1rem; color:#333; }
+  .insta-caption .hashtags { color:#0d6efd; }
+  .insta-card + .insta-card { margin-top: 1.5rem; }
+
+  /* Faster carousel animation */
+  .carousel-item { transition: transform .25s ease-in-out !important; }
+
+  /* 댓글 모달 스타일 */
+  #snsModalCommentsContainer { padding: 0 1rem; }
+  .comment-row { padding: .5rem 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .comment-row .insta-avatar { width:40px; height:40px; font-size:0.9rem; }
+  .comment-row .comment-content { white-space:pre-wrap; }
+  .reply-input input { flex:1; }
+  .reply-input button { white-space:nowrap; }
+  .view-replies { display:block; margin-left:58px; margin-top:4px; }
+  .view-replies:hover { text-decoration:underline; }
+
+  /* user popover */
+  .user-popover {
+    width:480px; /* increased width for better visibility */
+    box-shadow:0 10px 40px rgba(0,0,0,0.12);
+    /* hidden state */
+    opacity: 0;
+    transform: translateY(-10px) scale(.985);
+    /* smoother easing and slightly longer duration */
+    transition: opacity .28s cubic-bezier(.2,.8,.2,1), transform .28s cubic-bezier(.2,.8,.2,1);
+    will-change: opacity, transform;
+    pointer-events: none;
+    max-width: calc(100% - 32px);
+  }
+  /* visible state */
+  .user-popover.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+    box-shadow:0 16px 48px rgba(0,0,0,0.16);
+  }
+  /* larger avatar specifically in popover */
+  .user-popover .insta-avatar { width:72px; height:72px; font-size:1.5rem; }
+  .user-popover .card-body { padding:1.5rem; }
+  .user-popover .section-title { font-weight:700; font-size:1.05rem; margin-bottom:.35rem; }
+  .user-popover hr { margin: .75rem 0; color:#e9ecef; opacity:1; }
+  .user-popover .instrument { display:flex; gap:1rem; align-items:center; padding:.75rem 0; }
+  .user-popover .instrument img { width:120px; height:80px; object-fit:cover; border-radius:8px; }
+  .user-popover .instrument div { font-size:1.05rem; }
+  .user-popover .recent-post { padding:.4rem 0; border-bottom:1px solid #e9ecef; }
+  .user-popover .recent-post:last-child { border-bottom:none; }
+  .user-popover .recent-post a { color:#212529; text-decoration:none; font-weight:600; }
+  .user-popover .recent-post a:hover { color:#0d6efd; text-decoration:underline; }
+  .user-popover .counts { font-size:1.1rem; color:#6c757d; }
+  .user-popover .instrument-section { position: relative; }
+  .user-popover .instrument-view { display:flex; gap:1rem; align-items:center; padding:.75rem 0; }
+  .user-popover .instrument-view .thumb { position:relative; }
+  .user-popover .instrument-view img { width:120px; height:80px; object-fit:cover; border-radius:8px; }
+  .user-popover .crown-badge { position:absolute; top:6px; left:6px; background:rgba(255,255,255,.95); border-radius:999px; padding:2px 6px; color:#d4a017; font-weight:700; font-size:.9rem; display:flex; align-items:center; gap:4px; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+  .user-popover .inst-nav { position:absolute; top:50%; right:0; transform: translateY(-50%); display:flex; gap:.25rem; }
+  .user-popover .inst-nav .btn { border-radius:999px; width:28px; height:28px; display:flex; align-items:center; justify-content:center; padding:0; }
+
+  /* responsive: small screens use near-full width and adjust sizes */
+  @media (max-width: 575.98px) {
+    .user-popover { width: calc(100% - 32px); left: 16px !important; right: 16px !important; }
+    .user-popover.show { transform: none; }
+    .user-popover .insta-avatar { width:60px; height:60px; font-size:1.2rem; }
+    .user-popover .instrument img { width:90px; height:60px; }
+  }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-3 insta-feed">
+  <div>
+  </div>
+  <div>
+    {% if current_user.is_authenticated %}
+      <a class="btn btn-outline-primary" href="{{ url_for('main.sns_create') }}" style="border-width: 2px; font-size: 2rem; padding: 0.5rem 1rem; line-height: 1;">+</a>
+    {% else %}
+      <a class="btn btn-outline-secondary" href="{{ url_for('auth.login') }}">로그인 후 작성</a>
+    {% endif %}
+  </div>
+</div>
+
+<div id="snsPostsContainer">
+{% for p in posts %}
+  <div class="insta-post insta-card">
+    <div class="insta-header">
+      <div class="insta-avatar user-hover" data-user-id="{{ p.user_id }}">{{ p.username[0] if p.username }}</div>
+      <div>
+        <div class="insta-username">{{ p.username }}</div>
+        <div class="insta-time">{{ p.time_ago }}</div>
+      </div>
+      {% if current_user.is_authenticated and current_user.id == p.user_id %}
+        <button type="button" class="btn btn-sm btn-outline-danger insta-delete-btn delete-sns-post" data-id="{{ p.id }}" title="삭제">
+          <i class="bi bi-trash"></i>
+        </button>
+      {% endif %}
+    </div>
+    {% if p.media and p.media|length > 0 %}
+      <div id="snsCarousel-{{ p.id }}" class="carousel slide" data-bs-ride="false" data-bs-touch="true">
+        <div class="carousel-inner">
+          {% for m in p.media %}
+            <div class="carousel-item {{ 'active' if loop.index == 1 else '' }}">
+              {% if m.type == 'image' %}
+                <img src="{{ url_for('static', filename='uploads/' ~ m.filename) }}" alt="Post" class="insta-image d-block w-100">
+              {% else %}
+                <video class="insta-image d-block w-100" src="{{ url_for('static', filename='uploads/' ~ m.filename) }}" controls muted playsinline preload="metadata"></video>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+        {% if p.media|length > 1 %}
+          <button class="carousel-control-prev" type="button" data-bs-target="#snsCarousel-{{ p.id }}" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#snsCarousel-{{ p.id }}" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        {% endif %}
+      </div>
+    {% elif p.image %}
+      <img src="{{ url_for('static', filename='uploads/' ~ p.image) }}" alt="Post" class="insta-image d-block w-100">
+    {% else %}
+      <div class="insta-image"></div>
+    {% endif %}
+
+    <div class="insta-actions">
+      <i class="bi bi-heart{{ '-fill text-danger' if p.liked else '' }} like-btn" data-id="{{ p.id }}"></i>
+      <i class="bi bi-chat"></i>
+      <i class="bi bi-send"></i>
+    </div>
+
+    <div class="insta-likes">좋아요 <strong class="like-count">{{ p.like_count }}</strong>개</div>
+
+    <div class="insta-caption">
+      <div class="mb-2"><strong>{{ p.username }}</strong> {{ p.caption }}</div>
+      <a href="#" class="text-muted view-all-comments" data-id="{{ p.id }}">댓글 {{ (p.comments|length) if p.comments else 0 }}개 모두 보기</a>
+    </div>
+  </div>
+{% else %}
+  <p class="text-muted">아직 게시물이 없습니다. 첫 게시물을 올려보세요!</p>
+{% endfor %}
+</div>
+
+<!-- 로딩 인디케이터 -->
+<div id="loadingIndicator" class="text-center my-4" style="display:none;">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">로딩중...</span>
+  </div>
+  <p class="text-muted mt-2">게시물을 불러오는 중...</p>
+</div>
+
+<!-- 더 이상 게시물 없음 -->
+<div id="noMorePosts" class="text-center my-4 text-muted" style="display:none;">
+  <p>모든 게시물을 확인했습니다 ✓</p>
+</div>
+
+<!-- 상세 댓글 모달 -->
+<div class="modal fade" id="snsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body p-0">
+        <div class="row g-0">
+          <div class="col-md-7 bg-dark d-flex align-items-center justify-content-center">
+            <div id="snsModalMedia" class="w-100"></div>
+          </div>
+          <div class="col-md-5">
+            <div class="p-3 d-flex flex-column" style="height:80vh;">
+              <div id="snsModalHeader" class="mb-3 d-flex align-items-center gap-2">
+                <div class="insta-avatar" id="snsModalAvatar"></div>
+                <div>
+                  <div id="snsModalUsername" class="insta-username"></div>
+                  <div id="snsModalTime" class="insta-time"></div>
+                </div>
+              </div>
+              <div class="flex-grow-1 overflow-auto" id="snsModalCommentsContainer"></div>
+              <div id="replyingTo" class="small text-muted mb-2 ms-1" style="display:none"></div>
+              <div class="mt-2">
+                <form id="snsCommentForm" class="d-flex gap-2">
+                  <input id="snsCommentInput" class="form-control form-control-sm" placeholder="댓글 달기..." autocomplete="off">
+                  <button class="btn btn-primary btn-sm" type="submit" aria-label="게시">
+                    <i class="bi bi-arrow-return-left"></i>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- user popover container -->
+<div id="userPopover" class="card user-popover" style="display:none; position:absolute; z-index:2500;"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// expose current user id to JS (null if not logged in)
+const CURRENT_USER_ID = {{ current_user.id if current_user.is_authenticated else 'null' }};
+
+function updateLikeIcon(el, liked){
+  if(liked){
+    el.classList.add('bi-heart-fill','text-danger');
+    el.classList.remove('bi-heart');
+  } else {
+    el.classList.remove('bi-heart-fill','text-danger');
+    el.classList.add('bi-heart');
+  }
+}
+
+function createCommentDom(c, postId){
+  const wrapper = document.createElement('div');
+  wrapper.className = 'd-flex gap-2 mb-3 comment-row';
+  wrapper.dataset.commentId = c.id;
+
+  const avatar = document.createElement('div');
+  avatar.className = 'insta-avatar user-hover';
+  avatar.innerText = c.username ? c.username[0] : '?';
+  avatar.dataset.userId = c.user_id || '';
+  // hover data attribute used by popover logic
+  avatar.setAttribute('data-user-id', c.user_id || '');
+
+  const body = document.createElement('div');
+  body.style.flex = '1';
+
+  const head = document.createElement('div');
+  head.className = 'd-flex justify-content-between align-items-center';
+  const leftHead = document.createElement('div');
+  leftHead.innerHTML = `<strong>${c.username}</strong> <small class="text-muted ms-2">${c.time_ago||c.created_at}${c.edited_at ? ' · 수정됨' : ''}</small>`;
+
+  const rightHead = document.createElement('div');
+  rightHead.className = 'd-flex align-items-center gap-2';
+
+  // reply link
+  const replyLink = document.createElement('a');
+  replyLink.href = '#';
+  replyLink.className = 'text-muted small me-2';
+  replyLink.innerText = '답글';
+  replyLink.addEventListener('click', function(ev){
+    ev.preventDefault();
+    setReplyTarget(postId, c.id, c.username);
+  });
+  rightHead.appendChild(replyLink);
+
+  // edit/delete if owner
+  if(CURRENT_USER_ID && CURRENT_USER_ID === c.user_id){
+    const editLink = document.createElement('a');
+    editLink.href = '#'; editLink.className='text-muted small me-2'; editLink.innerText='수정';
+    editLink.addEventListener('click', function(ev){ ev.preventDefault(); showEditInput(wrapper, postId, c); });
+    const delLink = document.createElement('a');
+    delLink.href = '#'; delLink.className='text-muted small text-danger'; delLink.innerText='삭제';
+    delLink.addEventListener('click', function(ev){ ev.preventDefault(); deleteComment(postId, c.id, wrapper); });
+    rightHead.appendChild(editLink);
+    rightHead.appendChild(delLink);
+  }
+
+  head.appendChild(leftHead);
+  head.appendChild(rightHead);
+
+  const content = document.createElement('div');
+  content.className = 'mt-1 comment-content';
+  content.innerText = c.content;
+
+  body.appendChild(head);
+  body.appendChild(content);
+
+  // like button on the right
+  const likeCol = document.createElement('div');
+  likeCol.style.minWidth = '56px';
+  likeCol.className = 'd-flex flex-column align-items-center justify-content-center';
+  const heart = document.createElement('i');
+  heart.className = `bi ${ (c.likes && c.likes.indexOf(CURRENT_USER_ID)!==-1) ? 'bi-heart-fill text-danger like-comment-btn':'bi-heart like-comment-btn'}`;
+  heart.style.cursor = 'pointer';
+  heart.dataset.commentId = c.id;
+  const likeCount = document.createElement('div'); likeCount.className='small text-muted'; likeCount.innerText = (c.likes || []).length;
+  likeCol.appendChild(heart);
+  likeCol.appendChild(likeCount);
+
+  wrapper.appendChild(avatar);
+  wrapper.appendChild(body);
+  wrapper.appendChild(likeCol);
+  wrapper.dataset.parentId = c.parent_id || '';
+
+  return wrapper;
+}
+
+function buildCommentTree(comments){
+  const map = {};
+  comments.forEach(c=>{ map[c.id]=Object.assign({}, c, {children:[]}); });
+  const roots=[];
+  comments.forEach(c=>{
+    if(c.parent_id){
+      if(map[c.parent_id]) map[c.parent_id].children.push(map[c.id]);
+      else roots.push(map[c.id]);
+    } else {
+      roots.push(map[c.id]);
+    }
+  });
+  return roots;
+}
+
+// render comments with "더보기" behavior
+function renderComments(comments, container, postId, initialShow=3){
+  container.innerHTML = '';
+  if(!comments || comments.length===0) return;
+  const tree = buildCommentTree(comments);
+
+  function appendNode(n, parentEl, depth){
+    const el = createCommentDom(n, postId);
+    el.style.marginLeft = (depth*18)+'px';
+    parentEl.appendChild(el);
+
+    // add reply toggle if children exist
+    if(n.children && n.children.length){
+      const toggle = document.createElement('a');
+      toggle.href = '#';
+      toggle.className = 'small text-muted ms-4 view-replies';
+      toggle.innerText = `답글 보기 (${n.children.length})`;
+      let expanded = false;
+      const childContainer = document.createElement('div');
+      childContainer.className = 'mt-2';
+      childContainer.style.display = 'none';
+      toggle.addEventListener('click', function(ev){
+        ev.preventDefault();
+        expanded = !expanded;
+        if(expanded){
+          toggle.innerText = `답글 숨기기 (${n.children.length})`;
+          childContainer.style.display = 'block';
+          // render children
+          n.children.forEach(child=> appendNode(child, childContainer, depth+1));
+        } else {
+          toggle.innerText = `답글 보기 (${n.children.length})`;
+          childContainer.style.display = 'none';
+          childContainer.innerHTML = '';
+        }
+      });
+      parentEl.appendChild(toggle);
+      parentEl.appendChild(childContainer);
+    }
+  }
+
+  const total = tree.length;
+  const show = Math.min(initialShow, total);
+  for(let i=0;i<show;i++){
+    appendNode(tree[i], container, 0);
+  }
+  if(total>show){
+    const moreBtn = document.createElement('button');
+    moreBtn.className = 'btn btn-link small text-muted';
+    moreBtn.innerText = `댓글 더보기 (${total-show})`;
+    moreBtn.addEventListener('click', function(){
+      // append remaining
+      for(let j=show;j<tree.length;j++) appendNode(tree[j], container, 0);
+      moreBtn.remove();
+    });
+    const wrap = document.createElement('div'); wrap.className = 'text-center mt-2'; wrap.appendChild(moreBtn);
+    container.appendChild(wrap);
+  }
+}
+
+function setReplyTarget(postId, parentId, username){
+  // set dataset on the main comment form and show 'replying to' indicator
+  const form = document.getElementById('snsCommentForm');
+  form.dataset.parentId = parentId;
+  const replying = document.getElementById('replyingTo');
+  replying.style.display = 'block';
+  replying.innerHTML = `답글: <strong>${username}</strong> · <a href="#" id="cancelReply">취소</a>`;
+  // wire cancel
+  document.getElementById('cancelReply').addEventListener('click', function(ev){ ev.preventDefault(); cancelReplyTarget(); });
+  document.getElementById('snsCommentInput').focus();
+}
+
+function cancelReplyTarget(){
+  const form = document.getElementById('snsCommentForm');
+  delete form.dataset.parentId;
+  const replying = document.getElementById('replyingTo');
+  replying.style.display = 'none';
+  replying.innerHTML = '';
+  document.getElementById('snsCommentInput').placeholder = '댓글 달기...';
+}
+
+
+function appendNewCommentInModal(c, postId){
+  // simpler approach: refresh the modal to show the new comment in correct place
+  openPostModal(postId);
+}
+
+function showEditInput(commentEl, postId, commentObj){
+  const contentDiv = commentEl.querySelector('.comment-content');
+  const original = commentObj.content;
+  const ta = document.createElement('textarea'); ta.className='form-control form-control-sm'; ta.value = original;
+  const btnRow = document.createElement('div'); btnRow.className='d-flex gap-2 mt-2';
+  const save = document.createElement('button'); save.className='btn btn-sm btn-primary'; save.innerText='저장';
+  const cancel = document.createElement('button'); cancel.className='btn btn-sm btn-secondary'; cancel.innerText='취소';
+  btnRow.appendChild(save); btnRow.appendChild(cancel);
+  contentDiv.style.display='none';
+  contentDiv.parentElement.appendChild(ta); contentDiv.parentElement.appendChild(btnRow);
+  cancel.addEventListener('click', ()=>{ ta.remove(); btnRow.remove(); contentDiv.style.display='block'; });
+  save.addEventListener('click', ()=>{
+    const newContent = ta.value.trim(); if(!newContent) return;
+    fetch(`/sns/${postId}/comment/${commentObj.id}/edit`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({content:newContent})})
+      .then(r=>r.json())
+      .then(res=>{
+        if(res && res.id){
+          contentDiv.innerText = res.content;
+          // reflect edited_at maybe
+          ta.remove(); btnRow.remove(); contentDiv.style.display='block';
+        } else alert(res.error||'error');
+      }).catch(console.error);
+  });
+}
+
+function deleteComment(postId, commentId, el){
+  if(!confirm('댓글을 삭제하시겠어요?')) return;
+  fetch(`/sns/${postId}/comment/${commentId}/delete`, {method:'POST'})
+    .then(r=>r.json())
+    .then(res=>{
+      if(res && res.success){
+        // remove element and any replies in DOM
+        // simple approach: remove element; replies were inserted after parent so they may remain; easier: reload post
+        const modalPostId = document.getElementById('snsCommentForm').dataset.postId;
+        openPostModal(modalPostId); // refresh
+      } else alert(res.error||'error');
+    }).catch(console.error);
+}
+
+function toggleCommentLike(postId, commentId, heartEl){
+  fetch(`/sns/${postId}/comment/${commentId}/like`, {method:'POST'})
+    .then(r=>r.json())
+    .then(res=>{
+      if(res && res.like_count!==undefined){
+        // update like count
+        const countEl = heartEl.parentElement.querySelector('.small');
+        if(countEl) countEl.innerText = res.like_count;
+        if(res.liked) updateLikeIcon(heartEl, true); else updateLikeIcon(heartEl, false);
+      }
+    }).catch(console.error);
+}
+
+// open comment modal helper
+function openPostModal(id){
+  fetch(`/sns/${id}`)
+    .then(r=>r.json())
+    .then(post=>{
+      const mediaContainer = document.getElementById('snsModalMedia');
+      mediaContainer.innerHTML = '';
+      if(post.media && post.media.length > 0){
+        const carouselId = 'snsModalCarousel';
+        let inner = '';
+        post.media.forEach((m, idx)=>{
+          const active = (idx===0) ? 'active' : '';
+          if(m.type === 'image'){
+            inner += `<div class="carousel-item ${active}"><img class="d-block w-100" style="max-height:80vh; object-fit:cover;" src="/static/uploads/${m.filename}" alt=""></div>`;
+          } else {
+            inner += `<div class="carousel-item ${active}"><video class="d-block w-100" style="max-height:80vh; object-fit:cover;" src="/static/uploads/${m.filename}" controls muted playsinline preload="metadata"></video></div>`;
+          }
+        });
+        let controls = '';
+        if(post.media.length > 1){
+          controls = `
+            <button class="carousel-control-prev" type="button" data-bs-target="#${carouselId}" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#${carouselId}" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>`;
+        }
+        mediaContainer.innerHTML = `<div id="${carouselId}" class="carousel slide" data-bs-ride="false" data-bs-touch="true"><div class="carousel-inner">${inner}</div>${controls}</div>`;
+      } else {
+        const imgSrc = post.image ? `/static/uploads/${post.image}` : '';
+        mediaContainer.innerHTML = imgSrc ? `<img class="d-block w-100" style="max-height:80vh; object-fit:cover;" src="${imgSrc}" alt="">` : '';
+      }
+      document.getElementById('snsModalUsername').innerText = post.username;
+      document.getElementById('snsModalTime').innerText = post.time_ago || '';
+      const modalAvatar = document.getElementById('snsModalAvatar');
+      modalAvatar.innerText = post.username ? post.username[0] : '';
+      modalAvatar.setAttribute('data-user-id', post.user_id || '');
+      modalAvatar.classList.add('user-hover');
+      const container = document.getElementById('snsModalCommentsContainer');
+      // include caption as first element
+      const captionEl = document.createElement('div'); captionEl.className='mb-3'; captionEl.innerHTML = `<strong>${post.username}</strong> ${post.caption}`;
+      container.innerHTML = '';
+      container.appendChild(captionEl);
+      renderComments(post.comments || [], container, post.id, 3);
+      const form = document.getElementById('snsCommentForm');
+      form.dataset.postId = post.id;
+      document.getElementById('snsCommentInput').value = '';
+      const modalEl = document.getElementById('snsModal');
+      const modal = new bootstrap.Modal(modalEl);
+      modal.show();
+      // Focus comment input and ensure comment container is visible
+      setTimeout(()=>{
+        try{
+          document.getElementById('snsCommentInput').focus();
+          const c = document.getElementById('snsModalCommentsContainer');
+          if(c){ c.scrollTop = 0; }
+        }catch(e){}
+      }, 250);
+    }).catch(console.error);
+}
+
+// delegate click handler for cards and comment controls
+document.addEventListener('click', function(e){
+  // like post
+  const heart = e.target.closest('.like-btn');
+  if(heart){
+    const id = heart.getAttribute('data-id');
+    fetch(`/sns/like/${id}`, {method: 'POST'})
+      .then(r=>r.json())
+      .then(j=>{
+        if(j && j.like_count!==undefined){
+          const post = heart.closest('.insta-post');
+          post.querySelector('.like-count').innerText = j.like_count;
+          if(j.liked) updateLikeIcon(heart, true); else updateLikeIcon(heart, false);
+        }
+      }).catch(console.error);
+    return;
+  }
+
+  // open post modal (comment list)
+  const chat = e.target.closest('.bi-chat');
+  if(chat){
+    const postElem = chat.closest('.insta-post');
+    const likeBtn = postElem.querySelector('.like-btn');
+    const id = likeBtn && likeBtn.getAttribute('data-id');
+    if(!id) return;
+    openPostModal(id);
+    return;
+  }
+
+  // open via "view all comments" link
+  const viewAll = e.target.closest('.view-all-comments');
+  if(viewAll){
+    const id = viewAll.dataset.id;
+    if(id){ openPostModal(id); }
+    e.preventDefault();
+    return;
+  }
+
+  // delete own sns post
+  const delBtn = e.target.closest('.delete-sns-post');
+  if(delBtn){
+    const id = delBtn.dataset.id;
+    if(!id) return;
+    if(!confirm('이 게시물을 삭제할까요?')) return;
+    fetch(`/sns/${id}/delete`, {method:'POST'})
+      .then(r=>r.json())
+      .then(res=>{
+        if(res && res.success){
+          const postEl = delBtn.closest('.insta-post');
+          if(postEl) postEl.remove();
+        } else {
+          alert(res.error || '삭제에 실패했습니다');
+        }
+      }).catch(err=>{
+        console.error(err);
+        alert('삭제 중 오류가 발생했습니다');
+      });
+    return;
+  }
+
+  // comment like
+  const commentHeart = e.target.closest('.like-comment-btn');
+  if(commentHeart){
+    const commentId = commentHeart.dataset.commentId;
+    const postId = document.getElementById('snsCommentForm').dataset.postId;
+    if(!postId) return;
+    toggleCommentLike(postId, commentId, commentHeart);
+    return;
+  }
+});
+
+// hover popover for users
+let popoverTimer = null;
+let hideTimer = null;
+let popoverCache = {};
+const popoverEl = document.getElementById('userPopover');
+// ensure element is removed from layout after hide transition
+popoverEl.addEventListener('transitionend', function(ev){
+  if(ev.propertyName === 'opacity' && !popoverEl.classList.contains('show')){
+    popoverEl.style.display = 'none';
+  }
+});
+
+function showUserPopoverForElement(el){
+  const uid = el.getAttribute('data-user-id');
+  if(!uid) return;
+  // clear hide timer
+  if(hideTimer) { clearTimeout(hideTimer); hideTimer=null; }
+  // fetch or use cache
+  if(popoverCache[uid]){
+    renderUserPopover(popoverCache[uid], el);
+    return;
+  }
+  fetch(`/user/summary/${uid}`)
+    .then(r=>r.json())
+    .then(j=>{
+      popoverCache[uid]=j; renderUserPopover(j, el);
+    }).catch(console.error);
+}
+
+function renderUserPopover(data, el){
+  if(!data) return;
+  popoverEl.innerHTML = `
+    <div class="card-body">
+      <div class="d-flex align-items-center gap-2 mb-2 pb-2 border-bottom">
+        <div class="insta-avatar">${data.username ? data.username[0] : '?'}</div>
+        <div>
+          <div><strong>${data.username}</strong></div>
+          <div class="counts">게시글 ${data.posts_count} · 피드 ${data.sns_count}</div>
+        </div>
+      </div>
+      <div class="mb-2">
+        <div class="section-title">보유중인 악기${(Math.max(0, (data.instrument_count || (data.instruments?data.instruments.length:0)) - 1) > 0) ? ' +' + Math.max(0, (data.instrument_count || (data.instruments?data.instruments.length:0)) - 1) : ''}</div>
+        ${ (data.instruments && data.instruments.length)
+            ? `<div class="instrument-section">
+                 <div id="popoverInstrumentView"></div>
+                 ${ data.instruments.length > 1 ? `<div class="inst-nav">
+                     <button class="btn btn-light btn-sm popover-instr-prev" type="button" title="이전"><i class="bi bi-chevron-left"></i></button>
+                     <button class="btn btn-light btn-sm popover-instr-next" type="button" title="다음"><i class="bi bi-chevron-right"></i></button>
+                   </div>` : '' }
+               </div>`
+            : '<div class="text-muted small">보유중인 악기가 없습니다.</div>' }
+      </div>
+      <hr>
+      <div>
+        <div class="section-title">최근 글</div>
+        ${ (data.recent_posts && data.recent_posts.length)
+            ? data.recent_posts.map(r=>`<div class="recent-post"><a href="${r.url}">${r.title}</a></div>`).join('')
+            : '<div class="text-muted small">최근 글이 없습니다.</div>' }
+      </div>
+      <hr>
+      <div class="d-flex gap-2">
+        <a href="/user/${data.id}" class="btn btn-sm btn-outline-primary flex-grow-1">작성 글 보기</a>
+        <button class="btn btn-sm btn-outline-success" onclick="toggleFollowFromPopover(${data.id}, this)">
+          <span class="follow-btn-text">팔로우</span>
+        </button>
+      </div>
+    </div>`;
+
+    // 악기 뷰 렌더링 및 내비게이션
+    try {
+      const instruments = Array.isArray(data.instruments) ? data.instruments : [];
+      const view = document.getElementById('popoverInstrumentView');
+      if (instruments.length && view) {
+        let idx = 0;
+        const render = () => {
+          const it = instruments[idx];
+          const imgSrc = it && it.img ? '/static/uploads/' + it.img : '';
+          view.innerHTML = `
+            <div class="instrument-view">
+              <div class="thumb">
+                <img src="${imgSrc}" alt="">
+                ${it && it.is_featured ? '<div class="crown-badge"><i class="bi bi-crown-fill"></i> 대표</div>' : ''}
+              </div>
+              <div>
+                <div style="font-weight:600">${it && it.brand ? it.brand : ''}</div>
+                <div class="text-muted small">${it && it.model ? it.model : ''}</div>
+              </div>
+            </div>`;
+        };
+        render();
+        const prevBtn = popoverEl.querySelector('.popover-instr-prev');
+        const nextBtn = popoverEl.querySelector('.popover-instr-next');
+        if (prevBtn && nextBtn && instruments.length > 1) {
+          prevBtn.addEventListener('click', () => { idx = (idx - 1 + instruments.length) % instruments.length; render(); });
+          nextBtn.addEventListener('click', () => { idx = (idx + 1) % instruments.length; render(); });
+        }
+      }
+    } catch(e) { console.warn('popover instrument render error', e); }
+    
+    // 팔로우 상태 초기화 (로그인한 경우)
+    if (typeof loggedInUserId !== 'undefined' && loggedInUserId && loggedInUserId !== data.id) {
+      updateFollowButtonStatus(data.id, popoverEl.querySelector('.follow-btn-text').parentElement);
+    } else {
+      const followBtn = popoverEl.querySelector('button.btn-outline-success');
+      if (followBtn) followBtn.style.display = 'none';
+    }
+    
+  // position near el
+  const rect = el.getBoundingClientRect();
+  const scrollY = window.scrollY || window.pageYOffset;
+  const scrollX = window.scrollX || window.pageXOffset;
+  // ensure element is visible so we can measure it and animate
+  popoverEl.style.display = 'block';
+  // ensure starting from hidden state
+  popoverEl.classList.remove('show');
+  // force a reflow so the browser registers the starting styles before we add the .show class
+  void popoverEl.offsetHeight;
+  // try to the right, but if near edge, place left (use original 8px gap)
+  const preferredLeft = rect.right + 8 + scrollX;
+  const preferredTop = rect.top + scrollY;
+  // position then trigger the show class in next frame to animate
+  requestAnimationFrame(()=>{
+    let left = preferredLeft;
+    const popW = popoverEl.offsetWidth || 260;
+    if(left + popW > (window.innerWidth + scrollX - 8)){
+      left = rect.left - popW - 8 + scrollX;
+    }
+    if(left < scrollX + 8) left = scrollX + 8;
+    let top = preferredTop;
+    const popH = popoverEl.offsetHeight || 120;
+    if(top + popH > (window.innerHeight + scrollY - 8)){
+      top = (window.innerHeight + scrollY - popH - 8);
+    }
+    popoverEl.style.left = left + 'px';
+    popoverEl.style.top = top + 'px';
+    // only show if we haven't started hiding in the meantime
+    if(!hideTimer){
+      requestAnimationFrame(()=> popoverEl.classList.add('show'));
+    }
+  });
+}
+
+function hideUserPopoverDelayed(){
+  if(hideTimer) clearTimeout(hideTimer);
+  // remove visible class to start fade out / slide up
+  popoverEl.classList.remove('show');
+  // after transition (or as a fallback) ensure display is none
+  // increased timeout to 500ms to give mouse time to reach popover
+  hideTimer = setTimeout(()=>{ if(!popoverEl.classList.contains('show')) popoverEl.style.display='none'; }, 500);
+}
+
+// global mouse events for hover handling
+let hoverTarget = null;
+document.addEventListener('mouseover', function(e){
+  const el = e.target.closest('.user-hover');
+  if(el){
+    if(popoverTimer) clearTimeout(popoverTimer);
+    popoverTimer = setTimeout(()=> showUserPopoverForElement(el), 220);
+    hoverTarget = el;
+  }
+});
+
+document.addEventListener('mouseout', function(e){
+  const el = e.target.closest('.user-hover');
+  if(el){
+    // if popover is currently visible, ignore avatar mouseout
+    // (popover mouseleave will handle hiding)
+    if(popoverEl.classList.contains('show')){
+      return;
+    }
+    if(popoverTimer) clearTimeout(popoverTimer);
+    hoverTarget = null;
+  }
+});
+
+// when mouse enters the popover itself, cancel any pending hide
+popoverEl.addEventListener('mouseover', function(){
+  if(hideTimer){ clearTimeout(hideTimer); hideTimer = null; }
+  if(popoverTimer){ clearTimeout(popoverTimer); popoverTimer = null; }
+});
+
+// when mouse leaves the popover, schedule hide
+popoverEl.addEventListener('mouseleave', function(e){
+  // if moving to another user-hover avatar, don't hide (let mouseover on that avatar handle it)
+  const to = e.relatedTarget;
+  if(to && to.closest && to.closest('.user-hover')){
+    return;
+  }
+  hideUserPopoverDelayed();
+});
+
+popoverEl.addEventListener('mouseenter', function(){ if(hideTimer) { clearTimeout(hideTimer); hideTimer=null; } });
+popoverEl.addEventListener('mouseleave', function(){ hideUserPopoverDelayed(); });
+
+// 로그인 사용자 ID (template에서 주입)
+const loggedInUserId = {% if current_user.is_authenticated %}{{ current_user.id }}{% else %}null{% endif %};
+
+// 팝오버에서 팔로우 상태 업데이트
+async function updateFollowButtonStatus(userId, btn) {
+  try {
+    const res = await fetch(`/user/${userId}/is-following`);
+    const data = await res.json();
+    const textEl = btn.querySelector('.follow-btn-text');
+    if (data.following) {
+      textEl.textContent = '팔로우 취소';
+      btn.classList.remove('btn-outline-success');
+      btn.classList.add('btn-success');
+    } else {
+      textEl.textContent = '팔로우';
+      btn.classList.remove('btn-success');
+      btn.classList.add('btn-outline-success');
+    }
+  } catch (e) {
+    console.error('Follow status load error:', e);
+  }
+}
+
+// 팝오버에서 팔로우 토글
+async function toggleFollowFromPopover(userId, btn) {
+  try {
+    const res = await fetch(`/user/${userId}/follow`, {method: 'POST'});
+    const data = await res.json();
+    const textEl = btn.querySelector('.follow-btn-text');
+    if (data.following) {
+      textEl.textContent = '팔로우 취소';
+      btn.classList.remove('btn-outline-success');
+      btn.classList.add('btn-success');
+    } else {
+      textEl.textContent = '팔로우';
+      btn.classList.remove('btn-success');
+      btn.classList.add('btn-outline-success');
+    }
+  } catch (e) {
+    console.error('Follow error:', e);
+    alert('팔로우 처리 중 오류가 발생했습니다.');
+  }
+}
+
+// submit top-level or reply comment
+const commentForm = document.getElementById('snsCommentForm');
+if(commentForm){
+  commentForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    const postId = this.dataset.postId;
+    const parent_id = this.dataset.parentId || null;
+    const content = document.getElementById('snsCommentInput').value.trim();
+    if(!content) return;
+    fetch(`/sns/${postId}/comment`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({content, parent_id})})
+      .then(r=>r.json())
+      .then(c=>{
+        if(c && c.id){
+          // refresh modal list so tree structure is correct
+          openPostModal(postId);
+          // clear input and reply target
+
+// 무한 스크롤 구현
+let currentPage = 1;
+let isLoading = false;
+let hasMorePosts = {{ 'true' if has_more else 'false' }};
+
+const postsContainer = document.getElementById('snsPostsContainer');
+const loadingIndicator = document.getElementById('loadingIndicator');
+const noMorePosts = document.getElementById('noMorePosts');
+
+// 게시글 HTML 생성 함수
+function createPostHTML(p) {
+  const currentUserId = {{ current_user.id if current_user.is_authenticated else 'null' }};
+  const isOwner = currentUserId && currentUserId === p.user_id;
+  
+  let mediaHTML = '';
+  if (p.media && p.media.length > 0) {
+    const carouselId = `snsCarousel-${p.id}`;
+    mediaHTML = `<div id="${carouselId}" class="carousel slide" data-bs-ride="false" data-bs-touch="true">
+      <div class="carousel-inner">`;
+    p.media.forEach((m, idx) => {
+      const activeClass = idx === 0 ? 'active' : '';
+      if (m.type === 'image') {
+        mediaHTML += `<div class="carousel-item ${activeClass}">
+          <img src="/static/uploads/${m.filename}" alt="Post" class="insta-image d-block w-100">
+        </div>`;
+      } else {
+        mediaHTML += `<div class="carousel-item ${activeClass}">
+          <video class="insta-image d-block w-100" src="/static/uploads/${m.filename}" controls muted playsinline preload="metadata"></video>
+        </div>`;
+      }
+    });
+    mediaHTML += `</div>`;
+    if (p.media.length > 1) {
+      mediaHTML += `<button class="carousel-control-prev" type="button" data-bs-target="#${carouselId}" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#${carouselId}" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>`;
+    }
+    mediaHTML += `</div>`;
+  } else if (p.image) {
+    mediaHTML = `<img src="/static/uploads/${p.image}" alt="Post" class="insta-image d-block w-100">`;
+  } else {
+    mediaHTML = `<div class="insta-image"></div>`;
+  }
+
+  const deleteBtn = isOwner ? `<button type="button" class="btn btn-sm btn-outline-danger insta-delete-btn delete-sns-post" data-id="${p.id}" title="삭제">
+    <i class="bi bi-trash"></i>
+  </button>` : '';
+
+  const likedClass = p.liked ? '-fill text-danger' : '';
+  const commentCount = p.comments ? p.comments.length : 0;
+
+  return `<div class="insta-post insta-card">
+    <div class="insta-header">
+      <div class="insta-avatar user-hover" data-user-id="${p.user_id}">${p.username ? p.username[0] : '?'}</div>
+      <div>
+        <div class="insta-username">${p.username}</div>
+        <div class="insta-time">${p.time_ago}</div>
+      </div>
+      ${deleteBtn}
+    </div>
+    ${mediaHTML}
+    <div class="insta-actions">
+      <i class="bi bi-heart${likedClass} like-btn" data-id="${p.id}"></i>
+      <i class="bi bi-chat"></i>
+      <i class="bi bi-send"></i>
+    </div>
+    <div class="insta-likes">좋아요 <strong class="like-count">${p.like_count}</strong>개</div>
+    <div class="insta-caption">
+      <div class="mb-2"><strong>${p.username}</strong> ${p.caption}</div>
+      <a href="#" class="text-muted view-all-comments" data-id="${p.id}">댓글 ${commentCount}개 모두 보기</a>
+    </div>
+  </div>`;
+}
+
+// 다음 페이지 로드
+async function loadMorePosts() {
+  if (isLoading || !hasMorePosts) return;
+  
+  isLoading = true;
+  loadingIndicator.style.display = 'block';
+  
+  try {
+    const response = await fetch(`/sns?page=${currentPage + 1}`, {
+      headers: {'X-Requested-With': 'XMLHttpRequest'}
+    });
+    const data = await response.json();
+    
+    if (data.posts && data.posts.length > 0) {
+      data.posts.forEach(post => {
+        const postHTML = createPostHTML(post);
+        postsContainer.insertAdjacentHTML('beforeend', postHTML);
+      });
+      currentPage = data.next_page;
+      hasMorePosts = data.has_more;
+    } else {
+      hasMorePosts = false;
+    }
+    
+    if (!hasMorePosts) {
+      noMorePosts.style.display = 'block';
+    }
+  } catch (error) {
+    console.error('게시물 로드 에러:', error);
+  } finally {
+    isLoading = false;
+    loadingIndicator.style.display = 'none';
+  }
+}
+
+// 스크롤 이벤트 리스너
+let scrollTimeout;
+window.addEventListener('scroll', () => {
+  if (scrollTimeout) clearTimeout(scrollTimeout);
+  scrollTimeout = setTimeout(() => {
+    const scrollPosition = window.innerHeight + window.scrollY;
+    const threshold = document.documentElement.scrollHeight - 800; // 하단 800px 전에 로드
+    
+    if (scrollPosition >= threshold && hasMorePosts && !isLoading) {
+      loadMorePosts();
+    }
+  }, 100);
+});
+          document.getElementById('snsCommentInput').value = '';
+          cancelReplyTarget();
+        } else if(c.error){
+          alert(c.error);
+        }
+      }).catch(console.error);
+  });
+}
+
+// open modal directly if post_id query param is provided (for deep links from popover recent posts)
+const initialPostId = new URLSearchParams(window.location.search).get('post_id');
+if(initialPostId){
+  openPostModal(initialPostId);
+}
+</script>
+{% endblock %}

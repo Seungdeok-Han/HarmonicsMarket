@@ -1,0 +1,23 @@
+@startuml CreatePost_Sequence
+actor User
+participant Browser
+participant AppServer
+participant DB
+participant FileSystem
+
+' Factory + Service(Facade) + Repository 흐름
+User -> Browser: fills add-post form (title, brand/model, images)
+Browser -> AppServer: POST /add (form data + images)
+AppServer -> ConcretePostFactory: create("InstrumentPost", data)
+ConcretePostFactory --> AppServer: InstrumentPost(instance)
+AppServer -> PostService: createPost(instrumentPost)
+PostService -> PostRepository: save(instrumentPost)
+PostRepository -> DB: if brand==custom INSERT BrandInfo else use brand_id
+DB --> PostRepository: brand_id / post id
+PostRepository --> PostService: saved post
+PostService -> FileSystem: save uploaded images -> filenames
+FileSystem --> PostService: filenames
+PostService -> PostRepository: update images
+PostService --> Browser: redirect / (or post page)
+
+@enduml

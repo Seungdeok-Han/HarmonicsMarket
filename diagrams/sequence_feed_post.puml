@@ -1,0 +1,35 @@
+@startuml FeedPost_Sequence
+actor User
+participant Browser
+participant AppServer
+participant DB
+participant FileSystem
+
+User -> Browser: opens Feed -> taps "New Post"
+Browser -> AppServer: POST /feed/create (images + caption)
+
+' 패턴 적용된 흐름:
+'  - PostFactory (Factory)로 FeedPost 생성
+'  - PostRepository (Repository)로 저장
+'  - FeedPublisher (Observer Subject)로 팔로워에게 알림
+
+User -> Browser: opens Feed -> taps "New Post"
+Browser -> AppServer: POST /feed/create (images + caption)
+AppServer -> ConcretePostFactory: create("FeedPost", data)
+ConcretePostFactory --> AppServer: FeedPost(instance)
+AppServer -> PostService: createPost(feedPost)
+PostService -> PostRepository: save(feedPost)
+PostRepository -> DB: INSERT FeedPost
+DB --> PostRepository: feed_post_id
+PostRepository --> PostService: saved post
+PostService -> FileSystem: save images -> filenames
+FileSystem --> PostService: filenames
+PostService -> PostRepository: update images
+PostService -> FeedPublisher: notify(event: new_feed_post)
+FeedPublisher -> FollowerObserver: update(event)
+FollowerObserver --> DB: persist notification (optional)
+PostService --> Browser: 201 Created (redirect to feed)
+
+Note right of PostService: PostService acts as Facade; PostRepository encapsulates DB access
+
+@enduml

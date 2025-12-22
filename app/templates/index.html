@@ -1,87 +1,112 @@
 {% extends "base.html" %}
 {% block title %}메인 페이지{% endblock %}
 
+{% block sidebar %}
+      <!-- 시세 그래프/검색 영역 (사이드바로 이동) -->
+      <div class="card mb-4 shadow-sm h-100 border-0">
+        <div class="card-header fw-bold">
+          최근 거래가 검색
+        </div>
+        <div class="card-body">
+          <form id="price-history-form">
+            <div class="mb-2">
+              <label for="brand-select" class="form-label">제조사</label>
+              <select class="form-select" id="brand-select" name="brand_id" required>
+                <option value="">제조사 선택</option>
+                {% for brand in all_brands %}
+                <option value="{{ brand.id }}">{{ brand.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="mb-2">
+              <label for="model-select" class="form-label">모델명</label>
+              <input type="text" class="form-control" id="model-select" name="model_name" placeholder="모델명 입력" list="model-list" required>
+              <datalist id="model-list"></datalist>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">시세 그래프 보기</button>
+          </form>
+          <div id="price-history-chart" class="mt-3" style="display:none;"></div>
+        </div>
+      </div>
+{% endblock %}
+
 {% block content %}
 <style>
+/* Page background and cards */
 body {
-  background: linear-gradient(120deg, #f3f6fd 0%, #e0e7ef 100%);
+  background: var(--bg-page);
 }
 .card {
-  border-radius: 1.1rem;
-  box-shadow: 0 4px 24px 0 rgba(60, 80, 120, 0.10), 0 1.5px 4px 0 rgba(60, 80, 120, 0.04);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-surface);
 }
 .card-header {
-  border-radius: 1.1rem 1.1rem 0 0;
-  background: linear-gradient(90deg, #4f8cff 0%, #6ee7b7 100%);
-  color: #fff;
-  font-weight: bold;
-  font-size: 1.2rem;
-}
-.btn-primary, .btn-success {
-  box-shadow: 0 2px 8px 0 rgba(60, 80, 120, 0.08);
-  border-radius: 0.7rem;
+  background: var(--bg-surface);
+  border-color: var(--border);
+  color: var(--text-1);
   font-weight: 600;
-  letter-spacing: 0.02em;
+  font-size: 1.1rem;
 }
-.btn-primary {
-  background: linear-gradient(90deg, #4f8cff 0%, #6ee7b7 100%);
-  border: none;
-}
-.btn-success {
-  background: linear-gradient(90deg, #6ee7b7 0%, #4f8cff 100%);
-  border: none;
-}
+
+/* Forms */
 .form-label {
   font-weight: 600;
-  color: #4f8cff;
+  color: var(--text-1);
 }
 .form-check-input:checked {
-  background-color: #4f8cff;
-  border-color: #4f8cff;
-}
-.badge.bg-success, .badge.bg-warning, .badge.bg-secondary {
-  font-size: 1em;
-  border-radius: 0.7em;
-  padding: 0.5em 1em;
-}
-.card-title a {
-  color: #4f8cff;
-  text-decoration: none;
-  font-weight: bold;
-  transition: color 0.2s;
-}
-.card-title a:hover {
-  color: #6ee7b7;
-  text-decoration: underline;
-}
-.card-body {
-  background: #fff;
-  border-radius: 0 0 1.1rem 1.1rem;
-}
-.card.h-100:hover {
-  box-shadow: 0 8px 32px 0 rgba(79, 140, 255, 0.12), 0 2px 8px 0 rgba(60, 80, 120, 0.08);
-  transform: translateY(-2px) scale(1.02);
-  transition: all 0.2s;
+  background-color: var(--brand-primary);
+  border-color: var(--brand-primary);
 }
 .form-check-label {
   font-weight: 500;
-  color: #495057;
+  color: var(--text-2);
 }
 .form-check-input:checked + .form-check-label {
-  color: #4f8cff;
-  font-weight: bold;
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+/* Links and titles */
+.card-title a {
+  color: var(--brand-primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+.card-title a:hover {
+  color: var(--brand-primary-hover);
+  text-decoration: underline;
+}
+
+/* Hover effects */
+.card.h-100:hover {
+  box-shadow: var(--shadow-md);
+  transition: all 0.2s;
+}
+
+/* Badges */
+.badge.bg-success, .badge.bg-warning, .badge.bg-secondary {
+  font-size: 1em;
+  border-radius: var(--radius-pill);
+  padding: 0.5em 1em;
 }
 </style>
-<form method="GET" action="/" class="row g-3 mb-4 justify-content-center">
-    <div class="row mb-4 justify-content-center">
-        <div class="col-12 col-md-8">
-            <div class="input-group input-group-lg">
-                <input type="text" name="q" class="form-control" placeholder="모델명 또는 제목" value="{{ search_query or '' }}" style="font-size:1.3rem; height:3.2rem;">
-                <button class="btn btn-primary" type="submit" style="font-size:1.2rem; min-width:90px;">검색</button>
-            </div>
-        </div>
+<!-- 검색창 박스 -->
+<div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.5rem; width: 95%; max-width: 1200px; margin: 0 auto 1.5rem;">
+    <div class="d-flex gap-2 align-items-center">
+        <form method="GET" action="/" class="d-flex gap-2 w-100">
+            <input type="text" name="q" class="form-control form-control-lg" placeholder="모델명 또는 제목" value="{{ search_query or '' }}" style="font-size:1.3rem; height:3.2rem; border: 2px solid #000; border-radius: 2rem; flex: 1;">
+            <button class="btn btn-outline-dark d-flex align-items-center justify-content-center" type="submit" style="font-size:1.5rem; width:3.2rem; height:3.2rem; min-width:3.2rem; border: 2px solid #000; background: white; border-radius: 50%; padding: 0;">
+                <i class="bi bi-search"></i>
+            </button>
+        </form>
     </div>
-    <div class="col-md-3">
+</div>
+
+<!-- 필터 박스 -->
+<form method="GET" action="/" class="row g-3 mb-4 justify-content-center" style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.5rem; width: 95%; max-width: 1200px; margin: 0 auto 2rem;">
+    <div class="col-md-3 w-100">
         <label for="brand" class="form-label">브랜드 선택</label>
         <select name="brand" id="brand" class="form-select">
             <option value="">전체</option>
@@ -90,7 +115,7 @@ body {
             {% endfor %}
         </select>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3 w-100">
         <label for="sort" class="form-label">정렬 기준</label>
         <select name="sort" id="sort" class="form-select">
             <option value="">기본</option>
@@ -102,7 +127,7 @@ body {
             <option value="condition_worst" {% if sort == 'condition_worst' %}selected{% endif %}>상태 나쁨순</option>
         </select>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3 w-100">
         <label for="shape" class="form-label">쉐입(Shape) 필터</label>
         <select name="shape" id="shape" class="form-select">
             <option value="">전체</option>
@@ -116,7 +141,7 @@ body {
             <option value="Hollow" {% if request.args.get('shape') == 'Hollow' %}selected{% endif %}>Hollow</option>
         </select>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3 w-100">
         <label for="condition" class="form-label">손상도(상태) 필터</label>
         <select name="condition" id="condition" class="form-select">
             <option value="">전체</option>
@@ -127,7 +152,7 @@ body {
         </select>
     </div>
     <!-- 장르별 필터 UI (체크박스) -->
-    <div class="col-md-12 mb-2">
+    <div class="col-md-12 w-100">
         <label class="form-label fw-bold">장르별 필터</label>
         <div class="d-flex flex-wrap gap-2">
             {% for genre in all_genres %}
@@ -152,95 +177,104 @@ body {
 </form>
 
 <!-- 필터/검색 영역과 게시글 영역 구분 -->
+{% if current_user.is_authenticated %}
+<div class="d-flex justify-content-end mb-3">
+    <a href="{{ url_for('main.add_post') }}" class="btn btn-primary" style="font-size:1.1rem; padding: 0.6rem 1.5rem; border-radius: 2rem;">판매글 작성</a>
+</div>
+{% endif %}
 <div class="row g-4">
-      <div class="col-md-3">
-        <!-- 시세 그래프/검색 영역 -->
-        <div class="card mb-4 shadow-sm h-100 border-0" style="background:linear-gradient(120deg,#e0f7fa 0%,#f3f6fd 100%);">
-          <div class="card-header bg-light fw-bold text-primary" style="background:linear-gradient(90deg,#4f8cff11 0%,#6ee7b711 100%);color:#4f8cff;">
-            💸 내가 찾는 악기의 최근 거래가격이 궁금하다면?
-          </div>
-          <div class="card-body">
-            <form id="price-history-form">
-              <div class="mb-2">
-                <label for="brand-select" class="form-label">제조사</label>
-                <select class="form-select" id="brand-select" name="brand_id" required>
-                  <option value="">제조사 선택</option>
-                  {% for brand in all_brands %}
-                  <option value="{{ brand.id }}">{{ brand.name }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-              <div class="mb-2">
-                <label for="model-select" class="form-label">모델명</label>
-                <input type="text" class="form-control" id="model-select" name="model_name" placeholder="모델명 입력" list="model-list" required>
-                <datalist id="model-list"></datalist>
-              </div>
-              <button type="submit" class="btn btn-primary w-100">시세 그래프 보기</button>
-            </form>
-            <div id="price-history-chart" class="mt-3" style="display:none;"></div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-9">
+      <div class="col-12">
         <!-- 게시글 리스트 영역 -->
-        <div class="card shadow-sm border-0" style="background:linear-gradient(120deg,#f3f6fd 0%,#e0e7ef 100%);">
-          <div class="card-header bg-white border-bottom-0" style="font-size:1.3rem;font-weight:bold;color:#4f8cff;background:transparent;">
-            📋 실시간 중고 악기 게시글 목록
+        <div class="card shadow-sm border-0">
+          <div class="card-header" style="font-size:1.2rem;font-weight:bold; background: #212529; color: white; border-color: var(--border);">
+            판매중인 악기 목록
           </div>
           <div class="card-body pt-3 pb-1">
-            <div class="row">
+            <div class="row g-4">
               {% for post in posts %}
-              <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card h-100">
+              <div class="col-md-6 col-lg-6 mb-4">
+                <div class="card h-100 d-flex flex-column position-relative">
+                  <!-- 제목 (맨 위) + 댓글 개수 -->
+                  <div class="card-header border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0 flex-grow-1">
+                      <a href="{{ url_for('main.view_post', post_id=post.id) }}" style="color: #000; text-decoration: none;">{{ post.title }}</a>
+                    </h5>
+                    <span style="color: #dc3545; font-weight: 700; font-size: 1rem; margin-left: 0.5rem;">[{{ post.comments|length }}]</span>
+                  </div>
+                  
+                  <!-- 이미지 또는 플레이스홀더 -->
                   {% if post.images and post.images|length > 0 %}
-  <img src="{{ url_for('static', filename='uploads/' + post.images[0]) }}"
-       class="img-fluid"
-       style="max-height: 200px; object-fit: cover; width: 100%;"
-       alt="썸네일 이미지">
-{% endif %}
-                  <div class="card-body">
-                      <h5 class="card-title">
-                          <a href="{{ url_for('main.view_post', post_id=post.id) }}">{{ post.title }}</a>
-                      </h5>
-                      <p class="card-text">
-                          <strong>브랜드:</strong>
-                          {% if post.brand %}
-                          <span style="color:blue; cursor:pointer;"
+                    <img src="{{ url_for('static', filename='uploads/' + post.images[0]) }}"
+                         class="img-fluid"
+                         style="height: 280px; object-fit: cover; width: 100%; display: block;"
+                         alt="썸네일 이미지">
+                  {% else %}
+                    <div style="height: 280px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 1rem; font-weight: 600;">
+                      이미지 없음
+                    </div>
+                  {% endif %}
+                  
+                  <!-- 브랜드/모델명 박스 -->
+                  <div style="background: #f8f9fa; padding: 0.75rem 1rem; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+                    <div class="mb-1">
+                      <small class="text-muted">
+                        <strong>브랜드:</strong>
+                        {% if post.brand %}
+                          <span style="color: var(--brand-primary); cursor:pointer;"
                                 onmouseover="showTooltip(event, 'brand', '{{ post.brand_id }}')"
                                 onmouseout="hideTooltip()">
                             {{ post.brand.name }}
                           </span>
-                          {% else %}
-                              <span class="text-muted">(정보 없음)</span>
-                          {% endif %}<br>
-                          <strong>모델명:</strong> {{ post.model_name }}<br>
-                          <strong>가격:</strong>
-                          {% if post.price is not none %}
-                              {{ "%.0f"|format(post.price) }}만원
-                          {% else %}
-                              가격 미정
-                          {% endif %}<br>
-                          <strong>작성자:</strong> {{ post.user.username }}<br>
-                          <strong>조회수:</strong> {{ post.views }}
-                      </p>
+                        {% else %}
+                          <span>(정보 없음)</span>
+                        {% endif %}
+                      </small>
+                    </div>
+                    <div>
+                      <small class="text-muted">
+                        <strong>모델명:</strong> {{ post.model_name }}
+                      </small>
+                    </div>
                   </div>
-                  <div class="d-flex justify-content-end align-items-center mb-2">
+                  
+                  <!-- 하단: 조회수 (왼쪽), 가격+상태+삭제 (오른쪽) -->
+                  <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center" style="padding: 0.4rem 0.8rem;">
+                    <small class="text-muted" style="font-size: 0.8rem;">조회 {{ post.views }}</small>
+                    <div class="d-flex gap-1 align-items-center">
+                      <!-- 가격 박스 -->
+                      <div style="border: 2px solid #28a745; color: white; background: #28a745; padding: 0.25rem 0.5rem; border-radius: 4px; text-align: center; font-weight: 700; font-size: 0.75rem; white-space: nowrap; line-height: 1.2;">
+                        {% if post.price is not none %}
+                          {{ "%.0f"|format(post.price) }}만원
+                        {% else %}
+                          미정
+                        {% endif %}
+                      </div>
+                      
+                      <!-- 거래 상태 -->
                       {% if post.status == 'available' %}
-                          <span class="badge bg-success fs-6 px-3 py-2" style="font-size:1.1rem;">거래 가능</span>
+                        <div style="border: 2px solid #28a745; color: white; background: #28a745; padding: 0.25rem 0.5rem; border-radius: 4px; text-align: center; font-weight: 700; font-size: 0.75rem; white-space: nowrap; line-height: 1.2;">
+                          거래 가능
+                        </div>
                       {% elif post.status == 'reserved' %}
-                          <span class="badge bg-warning text-dark fs-6 px-3 py-2" style="font-size:1.1rem;">거래중</span>
+                        <div style="border: 2px solid #ffc107; color: white; background: #ffc107; padding: 0.25rem 0.5rem; border-radius: 4px; text-align: center; font-weight: 700; font-size: 0.75rem; white-space: nowrap; line-height: 1.2;">
+                          거래중
+                        </div>
                       {% elif post.status == 'sold' %}
-                          <span class="badge bg-secondary fs-6 px-3 py-2" style="font-size:1.1rem;">거래 완료</span>
+                        <div style="border: 2px solid #6c757d; color: white; background: #6c757d; padding: 0.25rem 0.5rem; border-radius: 4px; text-align: center; font-weight: 700; font-size: 0.75rem; white-space: nowrap; line-height: 1.2;">
+                          거래 완료
+                        </div>
                       {% endif %}
+                      
+                      {% if current_user.is_authenticated and post.user_id == current_user.id %}
+                        <form action="{{ url_for('main.delete_post', post_id=post.id) }}" method="POST" class="d-inline">
+                          <button type="submit" class="btn btn-sm btn-outline-danger" style="padding: 0.25rem 0.5rem; font-size: 0.9rem; line-height: 1.2;"
+                                  onclick="return confirm('정말 삭제하시겠습니까?')" title="삭제">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </form>
+                      {% endif %}
+                    </div>
                   </div>
-                  {% if current_user.is_authenticated and post.user_id == post.user_id %}
-                  <div class="card-footer text-end">
-                      <form action="{{ url_for('main.delete_post', post_id=post.id) }}" method="POST" class="d-inline">
-                          <button type="submit" class="btn btn-sm btn-danger"
-                                  onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
-                      </form>
-                  </div>
-                  {% endif %}
                 </div>
               </div>
               {% endfor %}

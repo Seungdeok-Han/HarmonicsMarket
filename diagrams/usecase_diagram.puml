@@ -1,0 +1,33 @@
+@startuml UseCase_Diagram
+left to right direction
+actor Visitor
+actor RegisteredUser
+
+Visitor --> (Browse listings)
+Visitor --> (View post)
+Visitor --> (Search / Filter)
+Visitor --> (View brand info)
+Visitor --> (View price history)
+
+RegisteredUser --> (Register)
+RegisteredUser --> (Login)
+RegisteredUser --> (Logout)
+RegisteredUser --> (Browse listings)
+RegisteredUser --> (View post)
+RegisteredUser --> (Search / Filter)
+RegisteredUser --> (Create post)
+RegisteredUser --> (Edit post)
+RegisteredUser --> (Delete post)
+RegisteredUser --> (Like post)
+RegisteredUser --> (Comment on post)
+RegisteredUser --> (Manage mypage / My instruments)
+
+// Instagram-style feed use cases
+RegisteredUser --> (View Feed)
+RegisteredUser --> (Post to Feed)
+RegisteredUser --> (Like Feed Post)
+RegisteredUser --> (Comment on Feed Post)
+RegisteredUser --> (Follow / Unfollow) 
+
+@enduml
+

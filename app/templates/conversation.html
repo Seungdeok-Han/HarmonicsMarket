@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ other.username }}님과의 대화{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <div>
+        <strong>{{ other.username }}</strong>
+        <span class="badge bg-success" id="connection-status" style="display:none;">연결됨</span>
+      </div>
+      <div><a href="{{ url_for('main.messages') }}" class="btn btn-link">← 대화함으로</a></div>
+    </div>
+    
+    <!-- 메시지 영역 -->
+    <div class="card-body" id="chat-window" style="height:60vh; overflow-y: auto; background-color: #f8f9fa;">
+      {% for m in conv %}
+        <div class="mb-3 d-flex {{ 'justify-content-end' if m.sender_id==current_user.id else 'justify-content-start' }}" id="message-{{ m.id }}">
+          <div class="p-3 rounded message-bubble" style="background: {{ '#007bff' if m.sender_id==current_user.id else '#e9ecef' }}; color: {{ 'white' if m.sender_id==current_user.id else 'black' }}; max-width:70%;">
+            <div class="small" style="opacity: 0.7;">
+              {{ '나' if m.sender_id==current_user.id else other.username }} · 
+              <span class="message-time" title="{% if m.read_at %}읽음{% endif %}">
+                {{ m.created_at.strftime('%H:%M') }}
+              </span>
+            </div>
+            <div class="mt-2">{{ m.content }}</div>
+            {% if m.sender_id==current_user.id and m.read_at %}
+              <small style="opacity: 0.7;">✓✓ 읽음</small>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    
+    <!-- 타이핑 표시 -->
+    <div id="typing-indicator" style="display:none; padding: 10px 15px; color: #999; font-size: 0.9em;">
+      <span id="typing-text"></span>
+    </div>
+    
+    <!-- 메시지 입력 영역 -->
+    <div class="card-footer">
+      <form id="message-form">
+        <div class="input-group">
+          <input 
+            type="text" 
+            id="message-input"
+            class="form-control" 
+            placeholder="메시지를 입력하세요... (실시간)" 
+            required
+            autocomplete="off"
+          >
+          <button class="btn btn-primary" type="submit">전송</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Socket.IO 라이브러리 -->
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<!-- 실시간 메시징 스크립트 -->
+<script src="{{ url_for('main.static', filename='realtime_messaging.js') }}"></script>
+
+<style>
+  #chat-window {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+  }
+  
+  .message-bubble {
+    word-wrap: break-word;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    animation: slideIn 0.3s ease-out;
+  }
+  
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  #typing-indicator {
+    border-top: 1px solid #ddd;
+  }
+  
+  .typing-dots span {
+    animation: blink 1.4s infinite;
+  }
+  
+  .typing-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  
+  .typing-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+  
+  @keyframes blink {
+    0%, 60%, 100% {
+      opacity: 0.5;
+    }
+    30% {
+      opacity: 1;
+    }
+  }
+  
+  #connection-status {
+    margin-left: 10px;
+  }
+</style>
+
+<script>
+  // 연결 상태 표시
+  document.addEventListener('DOMContentLoaded', function() {
+    const statusBadge = document.getElementById('connection-status');
+    if (window.messaging) {
+      const checkConnection = setInterval(() => {
+        if (window.messaging.isConnected) {
+          statusBadge.style.display = 'inline-block';
+          clearInterval(checkConnection);
+        }
+      }, 100);
+    }
+  });
+</script>
+
+{% endblock %}
