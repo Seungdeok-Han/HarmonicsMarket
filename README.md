@@ -1,8 +1,8 @@
-# 🎸 하모닉스 마켓 (Harmonics Market)
+#  하모닉스 마켓 (Harmonics Market)
 
 악기 중고거래 및 연주 커뮤니티 플랫폼
 
-## 📌 주요 기능
+##  주요 기능
 
 ### 🛒 중고 거래
 - 악기 판매글 작성/수정/삭제
@@ -12,28 +12,28 @@
 - YouTube 연주 영상 자동 검색
 - 조회수 및 좋아요 시스템
 
-### 💬 소셜 기능
-- SNS 피드 (무한 스크롤)
+###  소셜 기능
+- SNS 피드
 - 댓글 및 대댓글
 - 좋아요 시스템
 - 팔로우/팔로워 관리
 - 1:1 메시지
 - 실시간 알림
 
-### 🎵 AI 기반 연습 추천
+###  AI 기반 연습 추천
 - Google Gemini API를 활용한 맞춤형 연습 추천
 - 경력/장르/목표에 따른 곡 & 기술 추천
 - 특정 곡 지정 기능
 - YouTube 튜토리얼 자동 검색
 
-### 📊 연습 관리
+###  연습 관리
 - 추천 내용 저장 및 관리
 - 곡/기술별 진행도 트래킹 (미시작/연습중/완료)
 - 연습 일지 작성
 - 연속 연습일 통계 (스트릭 계산)
 - 총 연습 시간 집계
 
-## 🛠️ 기술 스택
+##  기술 스택
 
 ### Backend
 - **Python 3.x**
@@ -56,7 +56,7 @@
 - **SQLite** - 개발용 데이터베이스
 - **Alembic** - 마이그레이션 관리
 
-## 📁 프로젝트 구조
+##  프로젝트 구조
 
 ```
 PythonProject4/
@@ -78,7 +78,7 @@ PythonProject4/
 └── .gitignore
 ```
 
-## 🚀 설치 및 실행
+##  설치 및 실행
 
 ### 1. 저장소 클론
 ```powershell
@@ -124,7 +124,7 @@ flask run
 http://localhost:5000
 ```
 
-## 📊 데이터베이스 모델
+##  데이터베이스 모델
 
 ### 주요 모델
 - **User** - 사용자 계정
@@ -141,7 +141,7 @@ http://localhost:5000
 - **PracticeTechnique** - 추천 기술
 - **PracticeLog** - 연습 일지
 
-## 🔑 주요 엔드포인트
+##  주요 엔드포인트
 
 ### 인증
 - `GET/POST /login` - 로그인
@@ -174,7 +174,7 @@ http://localhost:5000
 - `POST /practice/update-status` - 진행도 업데이트
 - `GET/POST /practice/log` - 연습 일지
 
-## 🌟 개발 예정 기능
+##  개발 예정 기능
 
 - [ ] 실시간 채팅 (WebSocket)
 - [ ] 이메일 인증
@@ -184,15 +184,12 @@ http://localhost:5000
 - [ ] 알림 설정 관리
 - [ ] 모바일 앱 (React Native)
 
-## 📝 라이선스
+##  라이선스
 
 MIT License
 
-## 👨‍💻 개발자
+##  개발자
 
-- 개발: [Your Name]
-- 문의: [Your Email]
+- 개발:  Han Seung Deok
+- 문의: gkstmdejr99@gmail.com
 
----
-
-**Made with ❤️ for musicians**
