@@ -52,6 +52,8 @@
     </div>
     <div class="card-body">
       <form method="POST" action="{{ url_for('main.practice_log') }}">
+            {% include "_csrf_field.html" %}
+
         <div class="row">
           <div class="col-md-6 mb-3">
             <label for="date" class="form-label fw-bold">날짜</label>

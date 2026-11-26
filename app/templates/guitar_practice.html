@@ -16,6 +16,8 @@
     <div class="card-body p-4">
       
       <form id="practiceForm" method="POST" action="{{ url_for('main.guitar_practice') }}">
+            {% include "_csrf_field.html" %}
+
         <div class="row">
           <div class="col-md-6 mb-3">
             <label for="experience" class="form-label fw-bold">기타 경력</label>

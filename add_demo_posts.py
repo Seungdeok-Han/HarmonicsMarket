@@ -81,24 +81,24 @@ def add_demo_data():
         # 3. 시연용 게시글 생성
         posts_data = [
             {
-                'title': 'Fender Stratocaster 판매합니다 🎸',
+                'title': 'Fender Stratocaster 판매합니다 ',
                 'brand': 'Fender',
                 'model_name': 'Stratocaster Standard',
                 'shape': 'Stratocaster',
                 'condition': 85,
                 'description': '3년 정도 사용한 펜더 스트랫입니다. 관리 잘 했고 큰 흠집 없어요. 소프트 케이스 포함입니다!',
-                'price': 850000,
+                'price': 85,
                 'color': '#E74C3C',
                 'image_text': 'Fender\nStrat',
             },
             {
-                'title': 'Gibson Les Paul 급매 🔥',
+                'title': 'Gibson Les Paul 급매 ',
                 'brand': 'Gibson',
                 'model_name': 'Les Paul Standard',
                 'shape': 'Les Paul',
                 'condition': 90,
                 'description': '깁슨 레스폴 스탠다드입니다. 거의 새것 수준이고 하드케이스 포함해서 드립니다. 직거래 환영!',
-                'price': 2500000,
+                'price': 250,
                 'color': '#8E44AD',
                 'image_text': 'Gibson\nLes Paul',
             },
@@ -109,18 +109,18 @@ def add_demo_data():
                 'shape': 'RG',
                 'condition': 75,
                 'description': '메탈 연주하기 좋은 아이바네즈 RG입니다. 넥이 얇아서 연주하기 편해요. 사용감 있지만 기능은 완벽합니다.',
-                'price': 450000,
+                'price': 45,
                 'color': '#3498DB',
                 'image_text': 'Ibanez\nRG',
             },
             {
-                'title': 'Martin 어쿠스틱 기타 팝니다 🌟',
+                'title': 'Martin 어쿠스틱 기타 팝니다 ',
                 'brand': 'Martin',
                 'model_name': 'D-28',
                 'shape': 'Dreadnought',
                 'condition': 95,
                 'description': '마틴 D-28 모델입니다. 음색이 정말 좋고 거의 사용 안 해서 상태 최상입니다. 하드케이스 포함!',
-                'price': 3200000,
+                'price': 320,
                 'color': '#E67E22',
                 'image_text': 'Martin\nD-28',
             },
@@ -131,18 +131,18 @@ def add_demo_data():
                 'shape': 'Bass',
                 'condition': 80,
                 'description': '야마하 베이스 기타입니다. 초보자부터 중급자까지 사용하기 좋은 모델이에요. 깨끗하게 관리했습니다.',
-                'price': 520000,
+                'price': 52,
                 'color': '#1ABC9C',
                 'image_text': 'Yamaha\nBass',
             },
             {
-                'title': 'Fender Telecaster 빈티지 스타일 ✨',
+                'title': 'Fender Telecaster 빈티지 스타일 ',
                 'brand': 'Fender',
                 'model_name': 'Telecaster Classic',
                 'shape': 'Telecaster',
                 'condition': 88,
                 'description': '빈티지 스타일의 텔레캐스터입니다. 컨트리, 블루스 연주에 최적화되어 있어요. 사운드 정말 좋습니다!',
-                'price': 950000,
+                'price': 95,
                 'color': '#F39C12',
                 'image_text': 'Fender\nTele',
             },
@@ -153,18 +153,18 @@ def add_demo_data():
                 'shape': 'Dreadnought',
                 'condition': 70,
                 'description': '초보자 연습용으로 좋은 아이바네즈 어쿠스틱입니다. 가격도 저렴하고 연주하기 편해요.',
-                'price': 180000,
+                'price': 18,
                 'color': '#16A085',
                 'image_text': 'Ibanez\nAcoustic',
             },
             {
-                'title': 'Gibson SG 모델 판매 🎵',
+                'title': 'Gibson SG 모델 판매 ',
                 'brand': 'Gibson',
                 'model_name': 'SG Standard',
                 'shape': 'SG',
                 'condition': 82,
                 'description': '깁슨 SG 스탠다드입니다. 가볍고 연주하기 편한 모델이에요. 락 사운드 최고입니다!',
-                'price': 1800000,
+                'price': 180,
                 'color': '#C0392B',
                 'image_text': 'Gibson\nSG',
             },
@@ -245,7 +245,7 @@ def add_demo_data():
         print(f"   - 브랜드: {len(brands)}개")
         print(f"   - 게시글: {len(created_posts)}개")
         print(f"   - 이미지: {len(created_posts)}개")
-        print(f"\n🎸 SNS 탭에서 확인해보세요!")
+        print(f"\nSNS 탭에서 확인해보세요!")
 
 
 if __name__ == '__main__':
