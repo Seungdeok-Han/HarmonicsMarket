@@ -1,29 +1,32 @@
 {% extends 'base.html' %}
-
-{% block title %}메시지{% endblock %}
+{% block title %}메시지 · Harmonics Market{% endblock %}
 
 {% block content %}
-<div class="container my-4">
-  <h3>메시지함</h3>
-  {% if partners and partners|length > 0 %}
-    <div class="list-group mt-3">
-      {% for p in partners %}
-        <a href="{{ url_for('main.message_user', other_id=p.user.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-          <div>
-            <strong>{{ p.user.username }}</strong><br>
-            <small class="text-muted">{{ p.last_msg.content if p.last_msg else '' }}</small>
-          </div>
-          <div class="text-end">
-            <div class="small text-muted">{{ p.last_msg.created_at.strftime('%Y-%m-%d %H:%M') if p.last_msg else '' }}</div>
-            {% if p.unread and p.unread > 0 %}
-              <span class="badge bg-danger rounded-pill">{{ p.unread }}</span>
-            {% endif %}
-          </div>
-        </a>
-      {% endfor %}
+<section class="feed-hero">
+  <h1>메시지</h1>
+  <p class="text-muted mb-0">매물 문의와 거래 대화를 한곳에서 이어갑니다.</p>
+</section>
+
+{% if partners and partners|length > 0 %}
+<div class="msg-list">
+  {% for p in partners %}
+  <a href="{{ url_for('main.message_user', other_id=p.user.id) }}">
+    <div class="d-flex justify-content-between align-items-start gap-3">
+      <div>
+        <div class="fw-semibold">{{ p.user.username }}</div>
+        <div class="text-muted small mt-1">{{ p.last_msg.content if p.last_msg else '대화를 시작해 보세요' }}</div>
+      </div>
+      <div class="text-end">
+        <div class="small text-muted">{{ p.last_msg.created_at.strftime('%m/%d %H:%M') if p.last_msg else '' }}</div>
+        {% if p.unread and p.unread > 0 %}
+        <span class="badge-status is-available mt-1">{{ p.unread }}</span>
+        {% endif %}
+      </div>
     </div>
-  {% else %}
-    <div class="text-muted mt-3">현재 대화가 없습니다. 판매자에게 메시지를 보내보세요.</div>
-  {% endif %}
+  </a>
+  {% endfor %}
 </div>
+{% else %}
+<div class="panel text-muted">아직 대화가 없습니다. 매물 상세에서 ‘이 매물로 문의’로 시작해 보세요.</div>
+{% endif %}
 {% endblock %}

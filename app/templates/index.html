@@ -2,340 +2,178 @@
 {% block title %}중고 악기 거래 · Harmonics Market{% endblock %}
 
 {% block sidebar %}
-      <!-- 시세 그래프/검색 영역 (사이드바로 이동) -->
-      <div class="card mb-4 shadow-sm h-100 border-0">
-        <div class="card-header fw-bold">
-          최근 거래가 검색
-        </div>
-        <div class="card-body">
-          <form id="price-history-form">
-            <div class="mb-2">
-              <label for="brand-select" class="form-label">제조사</label>
-              <select class="form-select" id="brand-select" name="brand_id" required>
-                <option value="">제조사 선택</option>
-                {% for brand in all_brands %}
-                <option value="{{ brand.id }}">{{ brand.name }}</option>
-                {% endfor %}
-              </select>
-            </div>
-            <div class="mb-2">
-              <label for="model-select" class="form-label">모델명</label>
-              <input type="text" class="form-control" id="model-select" name="model_name" placeholder="모델명 입력" list="model-list" required>
-              <datalist id="model-list"></datalist>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">시세 그래프 보기</button>
-          </form>
-          <div id="price-history-chart" class="mt-3" style="display:none;"></div>
-        </div>
-      </div>
+<div class="panel">
+  <div class="fw-semibold mb-2">시세 살펴보기</div>
+  <form id="price-history-form">
+    <div class="mb-2">
+      <label for="brand-select" class="form-label">제조사</label>
+      <select class="form-select" id="brand-select" name="brand_id" required>
+        <option value="">제조사 선택</option>
+        {% for brand in all_brands %}
+        <option value="{{ brand.id }}">{{ brand.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="mb-2">
+      <label for="model-select" class="form-label">모델명</label>
+      <input type="text" class="form-control" id="model-select" name="model_name" placeholder="예: Player Strat" list="model-list" required>
+      <datalist id="model-list"></datalist>
+    </div>
+    <button type="submit" class="btn btn-ghost w-100">그래프 보기</button>
+  </form>
+  <div id="price-history-chart" class="mt-3" style="display:none;"></div>
+</div>
 {% endblock %}
 
 {% block content %}
-<style>
-/* Page background and cards */
-body {
-  background: var(--bg-page);
-}
-.card {
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-  background: var(--bg-surface);
-}
-.card-header {
-  background: var(--bg-surface);
-  border-color: var(--border);
-  color: var(--text-1);
-  font-weight: 600;
-  font-size: 1.1rem;
-}
+<section class="market-hero">
+  <div>
+    <h1>Harmonics Market</h1>
+    <p>브랜드·모델·상태로 고르고, 판매자에게 바로 문의하세요. 악기 중고거래에 맞춰 정리한 마켓입니다.</p>
+    <div class="market-hero-actions">
+      {% if current_user.is_authenticated %}
+      <a href="{{ url_for('main.add_post') }}" class="btn btn-brass">판매글 작성</a>
+      {% else %}
+      <a href="{{ url_for('auth.register') }}" class="btn btn-brass">시작하기</a>
+      <a href="{{ url_for('auth.login') }}" class="btn btn-ghost">로그인</a>
+      {% endif %}
+    </div>
+  </div>
+  <form method="GET" action="/" class="search-bar">
+    <input type="text" name="q" class="form-control" placeholder="모델명 또는 제목 검색" value="{{ search_query or '' }}">
+    <button class="btn btn-primary px-3" type="submit" aria-label="검색"><i class="bi bi-search"></i></button>
+  </form>
+</section>
 
-/* Forms */
-.form-label {
-  font-weight: 600;
-  color: var(--text-1);
-}
-.form-check-input:checked {
-  background-color: var(--brand-primary);
-  border-color: var(--brand-primary);
-}
-.form-check-label {
-  font-weight: 500;
-  color: var(--text-2);
-}
-.form-check-input:checked + .form-check-label {
-  color: var(--text-1);
-  font-weight: 600;
-}
-
-/* Links and titles */
-.card-title a {
-  color: var(--brand-primary);
-  text-decoration: none;
-  font-weight: 600;
-  transition: color 0.2s;
-}
-.card-title a:hover {
-  color: var(--brand-primary-hover);
-  text-decoration: underline;
-}
-
-/* Hover effects */
-.card.h-100:hover {
-  box-shadow: var(--shadow-md);
-  transition: all 0.2s;
-}
-
-/* Badges */
-.badge.bg-success, .badge.bg-warning, .badge.bg-secondary {
-  font-size: 1em;
-  border-radius: var(--radius-pill);
-  padding: 0.5em 1em;
-}
-</style>
-<!-- 검색창 박스 -->
-<div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.5rem; width: 95%; max-width: 1200px; margin: 0 auto 1.5rem;">
-    <div class="d-flex gap-2 align-items-center">
-        <form method="GET" action="/" class="d-flex gap-2 w-100">
-            <input type="text" name="q" class="form-control form-control-lg" placeholder="모델명 또는 제목" value="{{ search_query or '' }}" style="font-size:1.3rem; height:3.2rem; border: 2px solid #000; border-radius: 2rem; flex: 1;">
-            <button class="btn btn-outline-dark d-flex align-items-center justify-content-center" type="submit" style="font-size:1.5rem; width:3.2rem; height:3.2rem; min-width:3.2rem; border: 2px solid #000; background: white; border-radius: 50%; padding: 0;">
-                <i class="bi bi-search"></i>
-            </button>
-        </form>
+<form method="GET" action="/" class="filter-rail" id="filter-form">
+  {% if search_query %}<input type="hidden" name="q" value="{{ search_query }}">{% endif %}
+  <div>
+    <label for="brand" class="form-label">브랜드</label>
+    <select name="brand" id="brand" class="form-select js-auto-submit">
+      <option value="">전체</option>
+      {% for brand in all_brands %}
+      <option value="{{ brand.id }}" {% if selected_brand_id == brand.id %}selected{% endif %}>{{ brand.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="sort" class="form-label">정렬</label>
+    <select name="sort" id="sort" class="form-select js-auto-submit">
+      <option value="">최신순</option>
+      <option value="views_desc" {% if sort == 'views_desc' %}selected{% endif %}>조회수 높은순</option>
+      <option value="views_asc" {% if sort == 'views_asc' %}selected{% endif %}>조회수 낮은순</option>
+      <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>가격 높은순</option>
+      <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>가격 낮은순</option>
+      <option value="condition_best" {% if sort == 'condition_best' %}selected{% endif %}>상태 좋음순</option>
+      <option value="condition_worst" {% if sort == 'condition_worst' %}selected{% endif %}>상태 나쁨순</option>
+    </select>
+  </div>
+  <div>
+    <label for="shape" class="form-label">쉐입</label>
+    <select name="shape" id="shape" class="form-select js-auto-submit">
+      <option value="">전체</option>
+      {% for shape in ['Stratocaster','Les Paul','SG','Telecaster','Offset','SuperStrat','Semi-Hollow','Hollow'] %}
+      <option value="{{ shape }}" {% if request.args.get('shape') == shape %}selected{% endif %}>{{ shape }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="condition" class="form-label">상태</label>
+    <select name="condition" id="condition" class="form-select js-auto-submit">
+      <option value="">전체</option>
+      <option value="80up" {% if request.args.get('condition') == '80up' %}selected{% endif %}>80~100 최상</option>
+      <option value="60up" {% if request.args.get('condition') == '60up' %}selected{% endif %}>60~79 양호</option>
+      <option value="40up" {% if request.args.get('condition') == '40up' %}selected{% endif %}>40~59 사용감</option>
+      <option value="under40" {% if request.args.get('condition') == 'under40' %}selected{% endif %}>0~39 수리 필요</option>
+    </select>
+  </div>
+  {% if all_genres %}
+  <div class="genre-row">
+    {% for genre in all_genres %}
+    <div class="form-check form-check-inline m-0">
+      <input class="form-check-input js-auto-submit" type="checkbox" name="genres" id="genre-{{ loop.index }}" value="{{ genre }}" {% if genre in selected_genres %}checked{% endif %}>
+      <label class="form-check-label" for="genre-{{ loop.index }}">{{ genre }}</label>
     </div>
-</div>
-
-<!-- 필터 박스 -->
-<form method="GET" action="/" class="row g-3 mb-4 justify-content-center" style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.5rem; width: 95%; max-width: 1200px; margin: 0 auto 2rem;">
-    <div class="col-md-3 w-100">
-        <label for="brand" class="form-label">브랜드 선택</label>
-        <select name="brand" id="brand" class="form-select">
-            <option value="">전체</option>
-            {% for brand in all_brands %}
-                <option value="{{ brand.id }}" {% if selected_brand_id == brand.id %}selected{% endif %}>{{ brand.name }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="col-md-3 w-100">
-        <label for="sort" class="form-label">정렬 기준</label>
-        <select name="sort" id="sort" class="form-select">
-            <option value="">기본</option>
-            <option value="views_desc" {% if sort == 'views_desc' %}selected{% endif %}>조회수 높은순</option>
-            <option value="views_asc" {% if sort == 'views_asc' %}selected{% endif %}>조회수 낮은순</option>
-            <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>가격 높은순</option>
-            <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>가격 낮은순</option>
-            <option value="condition_best" {% if sort == 'condition_best' %}selected{% endif %}>상태 좋음순</option>
-            <option value="condition_worst" {% if sort == 'condition_worst' %}selected{% endif %}>상태 나쁨순</option>
-        </select>
-    </div>
-    <div class="col-md-3 w-100">
-        <label for="shape" class="form-label">쉐입(Shape) 필터</label>
-        <select name="shape" id="shape" class="form-select">
-            <option value="">전체</option>
-            <option value="Stratocaster" {% if request.args.get('shape') == 'Stratocaster' %}selected{% endif %}>Stratocaster</option>
-            <option value="Les Paul" {% if request.args.get('shape') == 'Les Paul' %}selected{% endif %}>Les Paul</option>
-            <option value="SG" {% if request.args.get('shape') == 'SG' %}selected{% endif %}>SG</option>
-            <option value="Telecaster" {% if request.args.get('shape') == 'Telecaster' %}selected{% endif %}>Telecaster</option>
-            <option value="Offset" {% if request.args.get('shape') == 'Offset' %}selected{% endif %}>Offset</option>
-            <option value="SuperStrat" {% if request.args.get('shape') == 'SuperStrat' %}selected{% endif %}>SuperStrat</option>
-            <option value="Semi-Hollow" {% if request.args.get('shape') == 'Semi-Hollow' %}selected{% endif %}>Semi-Hollow</option>
-            <option value="Hollow" {% if request.args.get('shape') == 'Hollow' %}selected{% endif %}>Hollow</option>
-        </select>
-    </div>
-    <div class="col-md-3 w-100">
-        <label for="condition" class="form-label">손상도(상태) 필터</label>
-        <select name="condition" id="condition" class="form-select">
-            <option value="">전체</option>
-            <option value="80up" {% if request.args.get('condition') == '80up' %}selected{% endif %}>80~100 (최상)</option>
-            <option value="60up" {% if request.args.get('condition') == '60up' %}selected{% endif %}>60~79 (양호)</option>
-            <option value="40up" {% if request.args.get('condition') == '40up' %}selected{% endif %}>40~59 (사용감 있음)</option>
-            <option value="under40" {% if request.args.get('condition') == 'under40' %}selected{% endif %}>0~39 (수리 필요)</option>
-        </select>
-    </div>
-    <!-- 장르별 필터 UI (체크박스) -->
-    <div class="col-md-12 w-100">
-        <label class="form-label fw-bold">장르별 필터</label>
-        <div class="d-flex flex-wrap gap-2">
-            {% for genre in all_genres %}
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" name="genres" id="genre-{{ loop.index }}" value="{{ genre }}" {% if genre in selected_genres %}checked{% endif %}>
-                    <label class="form-check-label" for="genre-{{ loop.index }}">{{ genre }}</label>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-    <script>
-    // 장르 체크박스 변경 시 자동 submit
-    document.addEventListener('DOMContentLoaded', function() {
-        const genreCheckboxes = document.querySelectorAll('input[name="genres"]');
-        genreCheckboxes.forEach(cb => {
-            cb.addEventListener('change', function() {
-                this.form.submit();
-            });
-        });
-    });
-    </script>
+    {% endfor %}
+  </div>
+  {% endif %}
 </form>
 
-<!-- 필터/검색 영역과 게시글 영역 구분 -->
-{% if current_user.is_authenticated %}
-<div class="d-flex justify-content-end mb-3">
-    <a href="{{ url_for('main.add_post') }}" class="btn btn-primary" style="font-size:1.1rem; padding: 0.6rem 1.5rem; border-radius: 2rem;">판매글 작성</a>
+<div class="section-head">
+  <h2>판매 중인 악기</h2>
+  <div class="text-muted small">{% if posts_paginated %}{{ posts_paginated.total }}건{% endif %}</div>
 </div>
-{% endif %}
-<div class="row g-4">
-      <div class="col-12">
-        <!-- 게시글 리스트 영역 -->
-        <div class="card shadow-sm border-0">
-          <div class="card-header" style="font-size:1.2rem;font-weight:bold; background: #212529; color: white; border-color: var(--border);">
-            판매중인 악기 목록
-          </div>
-          <div class="card-body pt-3 pb-1">
-            <div class="row g-4">
-              {% for post in posts %}
-              <div class="col-md-6 col-lg-6 mb-4">
-                <div class="card h-100 d-flex flex-column position-relative">
-                  <!-- 제목 (맨 위) + 댓글 개수 -->
-                  <div class="card-header border-bottom d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0 flex-grow-1">
-                      <a href="{{ url_for('main.view_post', post_id=post.id) }}" style="color: #000; text-decoration: none;">{{ post.title }}</a>
-                    </h5>
-                    <span style="color: #dc3545; font-weight: 700; font-size: 1rem; margin-left: 0.5rem;">[{{ post.comments|length }}]</span>
-                  </div>
-                  
-                  <!-- 이미지 또는 플레이스홀더 -->
-                  {% if post.images and post.images|length > 0 %}
-                    <img src="{{ url_for('static', filename='uploads/' + post.images[0]) }}"
-                         class="img-fluid"
-                         style="height: 280px; object-fit: cover; width: 100%; display: block;"
-                         alt="썸네일 이미지">
-                  {% else %}
-                    <div style="height: 280px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 1rem; font-weight: 600;">
-                      이미지 없음
-                    </div>
-                  {% endif %}
-                  
-                  <!-- 브랜드/모델명 박스 -->
-                  <div style="background: #f8f9fa; padding: 0.75rem 1rem; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
-                    <div class="mb-1">
-                      <small class="text-muted">
-                        <strong>브랜드:</strong>
-                        {% if post.brand %}
-                          <span style="color: var(--brand-primary); cursor:pointer;"
-                                onmouseover="showTooltip(event, 'brand', '{{ post.brand_id }}')"
-                                onmouseout="hideTooltip()">
-                            {{ post.brand.name }}
-                          </span>
-                        {% else %}
-                          <span>(정보 없음)</span>
-                        {% endif %}
-                      </small>
-                    </div>
-                    <div>
-                      <small class="text-muted">
-                        <strong>모델명:</strong> {{ post.model_name }}
-                      </small>
-                    </div>
-                  </div>
-                  
-                  <!-- 하단: 조회수 (왼쪽), 가격+상태+삭제 (오른쪽) -->
-                  <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center" style="padding: 0.4rem 0.8rem;">
-                    <small class="text-muted" style="font-size: 0.8rem;">조회 {{ post.views }}</small>
-                    <div class="d-flex gap-1 align-items-center">
-                      <!-- 가격 박스 -->
-                      <div style="border: 2px solid #28a745; color: white; background: #28a745; padding: 0.25rem 0.5rem; border-radius: 4px; text-align: center; font-weight: 700; font-size: 0.75rem; white-space: nowrap; line-height: 1.2;">
-                        {% if post.price is not none %}
-                          {{ "%.0f"|format(post.price) }}만원
-                        {% else %}
-                          미정
-                        {% endif %}
-                      </div>
-                      
-                      <!-- 거래 상태 -->
-                      {% if post.status == 'available' %}
-                        <div style="border: 2px solid #28a745; color: white; background: #28a745; padding: 0.25rem 0.5rem; border-radius: 4px; text-align: center; font-weight: 700; font-size: 0.75rem; white-space: nowrap; line-height: 1.2;">
-                          거래 가능
-                        </div>
-                      {% elif post.status == 'reserved' %}
-                        <div style="border: 2px solid #ffc107; color: white; background: #ffc107; padding: 0.25rem 0.5rem; border-radius: 4px; text-align: center; font-weight: 700; font-size: 0.75rem; white-space: nowrap; line-height: 1.2;">
-                          거래중
-                        </div>
-                      {% elif post.status == 'sold' %}
-                        <div style="border: 2px solid #6c757d; color: white; background: #6c757d; padding: 0.25rem 0.5rem; border-radius: 4px; text-align: center; font-weight: 700; font-size: 0.75rem; white-space: nowrap; line-height: 1.2;">
-                          거래 완료
-                        </div>
-                      {% endif %}
-                      
-                      {% if current_user.is_authenticated and post.user_id == current_user.id %}
-                        <form action="{{ url_for('main.delete_post', post_id=post.id) }}" method="POST" class="d-inline">
-            {% include "_csrf_field.html" %}
 
-                          <button type="submit" class="btn btn-sm btn-outline-danger" style="padding: 0.25rem 0.5rem; font-size: 0.9rem; line-height: 1.2;"
-                                  onclick="return confirm('정말 삭제하시겠습니까?')" title="삭제">
-                            <i class="bi bi-trash"></i>
-                          </button>
-                        </form>
-                      {% endif %}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {% endfor %}
-            </div>
-            <!-- 페이지네이션 -->
-<nav aria-label="Page navigation" class="mt-4">
-  <ul class="pagination justify-content-center">
-    {% if posts_paginated.has_prev %}
-      <li class="page-item">
-        <a class="page-link" href="{{ url_for('main.index', page=posts_paginated.prev_num, **args) }}">이전</a>
-      </li>
-    {% else %}
-      <li class="page-item disabled"><span class="page-link">이전</span></li>
+{% if posts %}
+<div class="listing-grid">
+  {% for post in posts %}
+  <article>
+    <a class="listing-tile" href="{{ url_for('main.view_post', post_id=post.id) }}">
+      <div class="listing-media">
+        {% if post.images and post.images|length > 0 %}
+          <img src="{{ url_for('static', filename='uploads/' + post.images[0]) }}" alt="{{ post.title }}">
+        {% else %}
+          <div class="ph">{{ post.brand.name if post.brand else 'Guitar' }}<br><span style="font-size:0.95rem;font-family:var(--font-body);">{{ post.model_name or '' }}</span></div>
+        {% endif %}
+      </div>
+      <div class="listing-body">
+        <h3>{{ post.title }}</h3>
+        <div class="listing-meta">
+          {{ post.brand.name if post.brand else '브랜드 미상' }}
+          {% if post.model_name %} · {{ post.model_name }}{% endif %}
+          {% if post.shape %} · {{ post.shape }}{% endif %}
+        </div>
+        <div class="listing-foot">
+          <span class="price-tag">{% if post.price is not none %}{{ "%.0f"|format(post.price) }}만원{% else %}가격 미정{% endif %}</span>
+          <span class="badge-status {% if post.status == 'available' %}is-available{% elif post.status == 'reserved' %}is-reserved{% else %}is-sold{% endif %}">
+            {{ post.status_label }}
+          </span>
+        </div>
+      </div>
+    </a>
+    {% if current_user.is_authenticated and post.user_id == current_user.id %}
+    <form action="{{ url_for('main.delete_post', post_id=post.id) }}" method="POST" class="mt-1">
+      {% include "_csrf_field.html" %}
+      <button type="submit" class="btn btn-sm btn-ghost" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+    </form>
     {% endif %}
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<div class="panel text-muted">조건에 맞는 매물이 없습니다. 필터를 바꿔 보거나 판매글을 등록해 보세요.</div>
+{% endif %}
+
+{% if posts_paginated %}
+<nav aria-label="페이지" class="mt-4">
+  <ul class="pagination justify-content-center">
+    <li class="page-item {% if not posts_paginated.has_prev %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for('main.index', page=posts_paginated.prev_num, **args) if posts_paginated.has_prev else '#' }}">이전</a>
+    </li>
     {% for p in posts_paginated.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
       {% if p %}
-        {% if p == posts_paginated.page %}
-          <li class="page-item active"><span class="page-link">{{ p }}</span></li>
-        {% else %}
-          <li class="page-item"><a class="page-link" href="{{ url_for('main.index', page=p, **args) }}">{{ p }}</a></li>
-        {% endif %}
+        <li class="page-item {% if p == posts_paginated.page %}active{% endif %}">
+          <a class="page-link" href="{{ url_for('main.index', page=p, **args) }}">{{ p }}</a>
+        </li>
       {% else %}
         <li class="page-item disabled"><span class="page-link">…</span></li>
       {% endif %}
     {% endfor %}
-    {% if posts_paginated.has_next %}
-      <li class="page-item">
-        <a class="page-link" href="{{ url_for('main.index', page=posts_paginated.next_num, **args) }}">다음</a>
-      </li>
-    {% else %}
-      <li class="page-item disabled"><span class="page-link">다음</span></li>
-    {% endif %}
+    <li class="page-item {% if not posts_paginated.has_next %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for('main.index', page=posts_paginated.next_num, **args) if posts_paginated.has_next else '#' }}">다음</a>
+    </li>
   </ul>
 </nav>
-          </div>
-        </div>
-      </div>
-    </div>
-<!-- Tooltip element -->
-<div id="infoTooltip" class="brand-tooltip"></div>
+{% endif %}
 
+<div id="infoTooltip" class="brand-tooltip"></div>
 <script>
-    let tooltip;
-    function showTooltip(event, category, id) {
-        fetch(`/api/info/${category}/${id}`)
-            .then(res => res.json())
-            .then(function(data) {
-                tooltip = document.getElementById('infoTooltip');
-                tooltip.innerHTML = `<strong>${data.title}</strong><br>${data.description}`;
-                tooltip.style.display = 'block';
-                tooltip.style.left = event.pageX + 10 + 'px';
-                tooltip.style.top = event.pageY + 10 + 'px';
-            });
-    }
-    function hideTooltip() {
-        if (tooltip) tooltip.style.display = 'none';
-    }
+  document.querySelectorAll('.js-auto-submit').forEach((el) => {
+    el.addEventListener('change', () => el.form.submit());
+  });
 </script>
 {% endblock %}
+
 {% block scripts %}
 {{ super() }}
 <script src="{{ url_for('static', filename='view_post.js') }}"></script>

@@ -3,18 +3,17 @@
 {% block title %}{{ other.username }}님과의 대화{% endblock %}
 
 {% block content %}
-<div class="container my-4">
-  <div class="card">
+<div class="chat-shell">
     <div class="card-header d-flex justify-content-between align-items-center">
       <div>
         <strong>{{ other.username }}</strong>
-        <span class="badge bg-success" id="connection-status" style="display:none;">연결됨</span>
+        <span class="badge-status is-available ms-2" id="connection-status" style="display:none;">연결됨</span>
       </div>
-      <div><a href="{{ url_for('main.messages') }}" class="btn btn-link">← 대화함으로</a></div>
+      <div><a href="{{ url_for('main.messages') }}" class="btn btn-ghost btn-sm">← 대화함</a></div>
     </div>
 
     {% if listing %}
-    <div class="px-3 py-2 border-bottom bg-light">
+    <div class="px-3 py-2 border-bottom" style="border-color:var(--line)!important; background: rgba(176,141,87,0.1);">
       <div class="small text-muted">문의 중인 매물</div>
       <a href="{{ url_for('main.view_post', post_id=listing.id) }}" class="fw-semibold text-decoration-none">
         {{ listing.title }}
@@ -24,7 +23,7 @@
     {% endif %}
     
     <!-- 메시지 영역 -->
-    <div class="card-body" id="chat-window" style="height:60vh; overflow-y: auto; background-color: #f8f9fa;">
+    <div class="card-body" id="chat-window" style="height:60vh; overflow-y: auto;">
       {% for m in conv %}
         <div class="mb-3 d-flex {{ 'justify-content-end' if m.sender_id==current_user.id else 'justify-content-start' }}" id="message-{{ m.id }}">
           <div class="p-3 rounded message-bubble" style="background: {{ '#007bff' if m.sender_id==current_user.id else '#e9ecef' }}; color: {{ 'white' if m.sender_id==current_user.id else 'black' }}; max-width:70%;">
@@ -56,7 +55,7 @@
             type="text" 
             id="message-input"
             class="form-control" 
-            placeholder="메시지를 입력하세요... (실시간)" 
+            placeholder="메시지를 입력하세요" 
             required
             autocomplete="off"
           >
@@ -64,7 +63,6 @@
         </div>
       </form>
     </div>
-  </div>
 </div>
 
 <!-- Socket.IO 라이브러리 -->

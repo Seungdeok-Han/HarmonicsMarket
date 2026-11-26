@@ -1,28 +1,24 @@
 {% extends "base.html" %}
-{% block title %}회원가입{% endblock %}
+{% block title %}회원가입 · Harmonics Market{% endblock %}
 
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 70vh;">
-    <div class="card shadow p-4" style="width: 100%; max-width: 400px;">
-        <h3 class="card-title text-center mb-4">📝 회원가입</h3>
-        <form method="POST">
-            {% include "_csrf_field.html" %}
-
-            <div class="mb-3">
-                <label for="username" class="form-label">아이디</label>
-                <input type="text" class="form-control" id="username" name="username" placeholder="아이디" required>
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">비밀번호</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호" required>
-            </div>
-            <div class="d-grid mb-3">
-                <button type="submit" class="btn btn-success">회원가입</button>
-            </div>
-        </form>
-        <p class="text-center">
-            이미 회원이신가요? <a href="{{ url_for('auth.login') }}">로그인</a>
-        </p>
-    </div>
+<div class="auth-wrap">
+  <div class="auth-panel">
+    <h1>회원가입</h1>
+    <p class="text-muted mb-4">간단한 계정으로 중고 거래와 커뮤니티를 이용하세요.</p>
+    <form method="POST">
+      {% include "_csrf_field.html" %}
+      <div class="mb-3">
+        <label for="username" class="form-label">아이디</label>
+        <input type="text" class="form-control" id="username" name="username" required autocomplete="username">
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">비밀번호</label>
+        <input type="password" class="form-control" id="password" name="password" required autocomplete="new-password">
+      </div>
+      <button type="submit" class="btn btn-primary w-100">가입하기</button>
+    </form>
+    <p class="text-center mt-3 mb-0">이미 회원이면 <a href="{{ url_for('auth.login') }}">로그인</a></p>
+  </div>
 </div>
 {% endblock %}

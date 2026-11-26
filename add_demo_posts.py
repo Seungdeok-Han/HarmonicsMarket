@@ -81,7 +81,7 @@ def add_demo_data():
         # 3. 시연용 게시글 생성
         posts_data = [
             {
-                'title': 'Fender Stratocaster 판매합니다 🎸',
+                'title': 'Fender Stratocaster 판매합니다 ',
                 'brand': 'Fender',
                 'model_name': 'Stratocaster Standard',
                 'shape': 'Stratocaster',
@@ -92,7 +92,7 @@ def add_demo_data():
                 'image_text': 'Fender\nStrat',
             },
             {
-                'title': 'Gibson Les Paul 급매 🔥',
+                'title': 'Gibson Les Paul 급매 ',
                 'brand': 'Gibson',
                 'model_name': 'Les Paul Standard',
                 'shape': 'Les Paul',
@@ -114,7 +114,7 @@ def add_demo_data():
                 'image_text': 'Ibanez\nRG',
             },
             {
-                'title': 'Martin 어쿠스틱 기타 팝니다 🌟',
+                'title': 'Martin 어쿠스틱 기타 팝니다 ',
                 'brand': 'Martin',
                 'model_name': 'D-28',
                 'shape': 'Dreadnought',
@@ -136,7 +136,7 @@ def add_demo_data():
                 'image_text': 'Yamaha\nBass',
             },
             {
-                'title': 'Fender Telecaster 빈티지 스타일 ✨',
+                'title': 'Fender Telecaster 빈티지 스타일 ',
                 'brand': 'Fender',
                 'model_name': 'Telecaster Classic',
                 'shape': 'Telecaster',
@@ -158,7 +158,7 @@ def add_demo_data():
                 'image_text': 'Ibanez\nAcoustic',
             },
             {
-                'title': 'Gibson SG 모델 판매 🎵',
+                'title': 'Gibson SG 모델 판매 ',
                 'brand': 'Gibson',
                 'model_name': 'SG Standard',
                 'shape': 'SG',
@@ -245,7 +245,7 @@ def add_demo_data():
         print(f"   - 브랜드: {len(brands)}개")
         print(f"   - 게시글: {len(created_posts)}개")
         print(f"   - 이미지: {len(created_posts)}개")
-        print(f"\n🎸 SNS 탭에서 확인해보세요!")
+        print(f"\nSNS 탭에서 확인해보세요!")
 
 
 if __name__ == '__main__':

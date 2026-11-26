@@ -1,24 +1,23 @@
 {% extends 'base.html' %}
 
-{% block title %}뮤직 피드 — 딩기딩{% endblock %}
+{% block title %}커뮤니티 · Harmonics Market{% endblock %}
 
 {% block content %}
 <style>
-  /* Instagram-like feed styles */
   .insta-feed h3 { font-size: 1.6rem; }
-  .insta-post { border-radius: .8rem; overflow: hidden; box-shadow: 0 6px 18px rgba(17,17,17,0.06); border: 1px solid rgba(0,0,0,0.04); }
-  .insta-header { display:flex; align-items:center; gap: .75rem; padding: .9rem 1rem; }
-  .insta-avatar { width:40px; height:40px; border-radius:50%; background:#ddd; display:inline-flex; align-items:center; justify-content:center; font-weight:700; color:#444; }
-  .insta-username { font-weight:700; }
-  .insta-time { font-size:.85rem; color:#6c757d; }
+  .insta-post { overflow: hidden; border: none; border-bottom: 1px solid var(--line); background: transparent; box-shadow: none; border-radius: 0; padding-bottom: 0.5rem; }
+  .insta-header { display:flex; align-items:center; gap: .75rem; padding: .9rem 0; }
+  .insta-avatar { width:40px; height:40px; border-radius:4px; background: rgba(47,93,80,0.12); display:inline-flex; align-items:center; justify-content:center; font-weight:700; color: var(--spruce-deep); font-family: var(--font-display); }
+  .insta-username { font-weight:650; }
+  .insta-time { font-size:.85rem; color: var(--text-3); }
   .insta-delete-btn { margin-left: auto; }
-  .insta-image { width:100%; height:520px; object-fit:cover; display:block; background:#f3f3f3; }
-  .insta-actions { padding: .65rem 1rem; display:flex; gap:1rem; align-items:center; }
+  .insta-image { width:100%; max-height:460px; object-fit:cover; display:block; background:#d7dde4; border: 1px solid var(--line); }
+  .insta-actions { padding: .65rem 0; display:flex; gap:1rem; align-items:center; }
   .insta-actions .bi { font-size:1.25rem; cursor:pointer; }
-  .insta-likes { padding: 0 1rem 0.5rem 1rem; font-weight:600; }
-  .insta-caption { padding: 0 1rem 1rem 1rem; color:#333; }
-  .insta-caption .hashtags { color:#0d6efd; }
-  .insta-card + .insta-card { margin-top: 1.5rem; }
+  .insta-likes { padding: 0 0 0.5rem; font-weight:600; }
+  .insta-caption { padding: 0 0 1rem; color: var(--ink); }
+  .insta-caption .hashtags { color: var(--spruce); }
+  .insta-card + .insta-card { margin-top: 0.35rem; }
 
   /* Faster carousel animation */
   .carousel-item { transition: transform .25s ease-in-out !important; }
@@ -83,17 +82,20 @@
   }
 </style>
 
-<div class="d-flex justify-content-between align-items-center mb-3 insta-feed">
+<section class="feed-hero d-flex justify-content-between align-items-end gap-3 flex-wrap">
   <div>
+    <h1>커뮤니티</h1>
+    <p class="text-muted mb-0">연주 인증, 장비 자랑, 거래 후기를 남기는 공간입니다.</p>
   </div>
   <div>
     {% if current_user.is_authenticated %}
-      <a class="btn btn-outline-primary" href="{{ url_for('main.sns_create') }}" style="border-width: 2px; font-size: 2rem; padding: 0.5rem 1rem; line-height: 1;">+</a>
+      <a class="btn btn-brass" href="{{ url_for('main.sns_create') }}">글 쓰기</a>
     {% else %}
-      <a class="btn btn-outline-secondary" href="{{ url_for('auth.login') }}">로그인 후 작성</a>
+      <a class="btn btn-ghost" href="{{ url_for('auth.login') }}">로그인 후 작성</a>
     {% endif %}
   </div>
-</div>
+</section>
+<div class="insta-feed">
 
 <div id="snsPostsContainer">
 {% for p in posts %}
@@ -209,6 +211,7 @@
 
 <!-- user popover container -->
 <div id="userPopover" class="card user-popover" style="display:none; position:absolute; z-index:2500;"></div>
+</div>
 {% endblock %}
 
 {% block scripts %}

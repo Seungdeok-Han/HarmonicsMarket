@@ -1,268 +1,177 @@
 {% extends "base.html" %}
-{% block title %}{{ post.title }}{% endblock %}
+{% block title %}{{ post.title }} · Harmonics Market{% endblock %}
 
 {% block content %}
-<style>
-/* Only show underline on hover/focus for tooltip triggers */
-.brand-tooltip-trigger, .shape-tooltip-trigger, #famous-users-tooltip-trigger {
-  text-decoration: none;
-  transition: text-decoration 0.2s;
-}
-.brand-tooltip-trigger:hover, .brand-tooltip-trigger:focus,
-.shape-tooltip-trigger:hover, .shape-tooltip-trigger:focus,
-#famous-users-tooltip-trigger:hover, #famous-users-tooltip-trigger:focus {
-  text-decoration: underline dotted;
-}
-</style>
-<div class="container my-4">
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h2 class="mb-0">{{ post.title }}</h2>
-            {% if current_user.is_authenticated and current_user.id == post.user_id %}
-              <a href="{{ url_for('main.edit_post', post_id=post.id) }}" class="btn btn-outline-primary">수정</a>
-            {% endif %}
-        </div>
-        <div class="card-body">
-            {% if post.images %}
-            <div class="row mb-3">
-                {% for filename in post.images %}
-                    <div class="col-md-6 mb-3">
-                        <img src="{{ url_for('static', filename='uploads/' + filename) }}"
-                             class="img-fluid rounded shadow-sm"
-                             style="max-height: 400px; object-fit: cover; width: 100%;"
-                             alt="악기 이미지">
-                    </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-<ul class="list-group list-group-flush mb-3">
-                <li class="list-group-item"><strong>브랜드:</strong>
-  <span class="brand-tooltip-trigger" style="color:blue; cursor:pointer;"
-        data-brand-id="{{ post.brand.id }}"
-        onmouseover="window.showTooltip(event, 'brand', '{{ post.brand.id }}')"
-        onmouseout="window.hideTooltip()"
-        id="brand-tooltip">
-    {{ post.brand.name }}
-  </span>
-</li>
-                <li class="list-group-item"><strong>모델명:</strong> {{ post.model_name }}
-  {% if famous_users_for_model %}
-  <span class="ms-2 text-primary" id="famous-users-tooltip-trigger" style="cursor:pointer;" data-bs-toggle="tooltip" data-bs-placement="right" title="{{ famous_users_for_model }}">
-    이 기타를 사용한 사람은?
-  </span>
-  {% else %}
-  <span class="ms-2 text-muted" style="font-size:0.95em;">(유명 플레이어 정보 없음)</span>
+<div class="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
+  <div>
+    <a href="{{ url_for('main.index') }}" class="text-muted small text-decoration-none">← 목록</a>
+    <h1 class="mt-1 mb-1" style="font-size:clamp(1.6rem,3vw,2.2rem);">{{ post.title }}</h1>
+    <div class="text-muted">
+      조회 {{ post.views or 0 }}
+      · <span class="badge-status {% if post.status == 'available' %}is-available{% elif post.status == 'reserved' %}is-reserved{% else %}is-sold{% endif %}">{{ post.status_label }}</span>
+    </div>
+  </div>
+  {% if current_user.is_authenticated and current_user.id == post.user_id %}
+  <a href="{{ url_for('main.edit_post', post_id=post.id) }}" class="btn btn-ghost">수정</a>
   {% endif %}
-</li>
-                <li class="list-group-item"><strong>쉐입:</strong>
-                  <span class="shape-tooltip-trigger" style="color:blue; cursor:pointer;"
-                        data-shape="{{ post.shape|e }}"
-                        onmouseover="window.showShapeTooltip(event, '{{ post.shape|e }}')"
-                        onmouseout="window.hideTooltip()"
-                        id="shape-tooltip">
-                    {{ post.shape }}
-                  </span>
-                </li>
-                <li class="list-group-item"><strong>상태:</strong>
-                    <div class="progress" style="height: 28px; background: #eee;">
-                        {% set cond = post.condition|int %}
-                        {% if cond >= 80 %}
-                            {% set bar_color = 'bg-success' %}
-                        {% elif cond >= 60 %}
-                            {% set bar_color = 'bg-info' %}
-                        {% elif cond >= 40 %}
-                            {% set bar_color = 'bg-warning' %}
-                        {% else %}
-                            {% set bar_color = 'bg-danger' %}
-                        {% endif %}
-                        <div class="progress-bar {{ bar_color }}" role="progressbar" style="width: {{ cond }}%; font-weight:bold; font-size:1rem;" aria-valuenow="{{ cond }}" aria-valuemin="0" aria-valuemax="100">{{ cond }} / 100</div>
-                    </div>
-                </li>
-                <li class="list-group-item"><strong>가격:</strong>
-                    {% if post.price %}{{ "%.0f"|format(post.price) }}만원{% else %}가격 미정{% endif %}
-                </li>
-                <li class="list-group-item"><strong>조회수:</strong> {{ post.views }}</li>
-            </ul>
+</div>
 
-            {% if post.user %}
-            <div class="seller-trust mb-3 p-3 border rounded-3" style="background: var(--bg-page); border-color: var(--border) !important;">
-              <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
-                <div>
-                  <div class="text-muted small mb-1">판매자</div>
-                  <a href="{{ url_for('main.user_profile', user_id=post.user.id) }}" class="fw-semibold text-decoration-none">
-                    {{ post.user.username }}
-                  </a>
-                  <div class="small text-muted mt-1">
-                    판매중 {{ seller_listings|default(0) }} · 거래완료 {{ seller_sold|default(0) }}
-                  </div>
-                </div>
-                {% if current_user.is_authenticated and current_user.id != post.user_id %}
-                <a href="{{ url_for('main.message_user', other_id=post.user_id, listing=post.id) }}" class="btn btn-primary">
-                  <i class="bi bi-chat-dots"></i> 이 매물로 문의
-                </a>
-                {% elif not current_user.is_authenticated %}
-                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">로그인 후 문의</a>
-                {% endif %}
-              </div>
-            </div>
-            {% endif %}
-
-            {% if genre_tags %}
-            <div class="mb-3">
-                <strong>추천 장르:</strong>
-                {% for genre in genre_tags %}
-                    <span class="badge bg-secondary me-1">{{ genre }}</span>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="mb-3 text-muted">
-                <strong>추천 장르:</strong> 장르 정보 없음
-            </div>
-            {% endif %}
-
-            {% if current_user.is_authenticated %}
-            <div class="d-flex gap-2 align-items-center flex-wrap">
-                <button id="like-button" class="btn btn-outline-danger" data-url="{{ url_for('main.toggle_like', post_id=post.id) }}">
-                    {% if liked %}
-                        <i class="bi bi-heart-fill"></i> 좋아요 취소
-                    {% else %}
-                        <i class="bi bi-heart"></i> 좋아요
-                    {% endif %}
-                </button>
-                <span id="like-count">{{ post.likes|length }}명이 좋아합니다</span>
-            </div>
-            {% endif %}
-
-            <div class="d-flex justify-content-end align-items-center mb-2">
-            {% if post.status == 'available' %}
-                <span class="badge bg-success fs-6 px-3 py-2" style="font-size:1.1rem;">{{ post.status_label }}</span>
-            {% elif post.status == 'reserved' %}
-                <span class="badge bg-warning text-dark fs-6 px-3 py-2" style="font-size:1.1rem;">{{ post.status_label }}</span>
-            {% elif post.status == 'sold' %}
-                <span class="badge bg-secondary fs-6 px-3 py-2" style="font-size:1.1rem;">{{ post.status_label }}</span>
-            {% endif %}
+<div class="detail-layout">
+  <div>
+    <div class="detail-gallery mb-3">
+      {% if post.images %}
+        {% for filename in post.images %}
+          <img src="{{ url_for('static', filename='uploads/' + filename) }}" alt="{{ post.title }}">
+        {% endfor %}
+      {% else %}
+        <div class="listing-media" style="min-height:280px;">
+          <div class="ph">{{ post.brand.name if post.brand else 'Instrument' }}</div>
         </div>
+      {% endif %}
+    </div>
 
-            <hr>
-            <h5>설명</h5>
-            <p>{{ post.description.replace('\n', '<br>') | safe }}</p>
-        </div>
+    <div class="mb-4">
+      <h2 class="h5">설명</h2>
+      <p class="mb-0" style="white-space:pre-wrap;">{{ post.description or '' }}</p>
     </div>
 
     {% if youtube_links %}
-        <div class="mb-4">
-            <h5>🎵 사운드 샘플</h5>
-            {% for link in youtube_links %}
-                <div class="mb-3">
-                    <iframe class="w-100" height="315" src="{{ link }}" frameborder="0" allowfullscreen></iframe>
-                </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="mb-4 text-muted">유튜브 샘플 영상을 찾을 수 없습니다.</div>
+    <div class="mb-4">
+      <h2 class="h5">사운드 샘플</h2>
+      {% for link in youtube_links %}
+      <div class="mb-3 ratio ratio-16x9">
+        <iframe src="{{ link }}" title="youtube sample" allowfullscreen></iframe>
+      </div>
+      {% endfor %}
+    </div>
     {% endif %}
+  </div>
 
-    <a href="{{ url_for('main.index') }}" class="btn btn-secondary mb-4">← 목록으로 돌아가기</a>
-
-    <div class="row">
-      <div class="col-md-8">
-        <!-- 기존 상세 내용 ... -->
+  <aside>
+    <div class="panel mb-3">
+      <div class="price-tag mb-2" style="font-size:1.6rem;">
+        {% if post.price %}{{ "%.0f"|format(post.price) }}만원{% else %}가격 미정{% endif %}
       </div>
-      <div class="col-md-4">
-        <!-- 유사 악기 추천 영역 -->
-        <div class="card mb-4 shadow-sm">
-          <div class="card-header bg-light fw-bold">이 악기와 비슷한 매물</div>
-          <div class="card-body">
-            {% if similar_posts and similar_posts|length > 0 %}
-              {% for sim in similar_posts %}
-                <div class="mb-3 border-bottom pb-2">
-                  <a href="{{ url_for('main.view_post', post_id=sim.id) }}" class="fw-bold" style="font-size:1.1em;">{{ sim.title }}</a><br>
-                  <span class="text-muted">{{ sim.brand.name if sim.brand else '' }} / {{ sim.model_name }}</span><br>
-                  <span class="badge bg-secondary me-1">{{ sim.shape }}</span>
-                  {% if sim.price %}<span class="badge bg-info text-dark">{{ '%.0f'|format(sim.price) }}만원</span>{% endif %}
-                  {% if sim.status == 'available' %}
-                    <span class="badge bg-success">거래 가능</span>
-                  {% elif sim.status == 'reserved' %}
-                    <span class="badge bg-warning text-dark">거래중</span>
-                  {% elif sim.status == 'sold' %}
-                    <span class="badge bg-secondary">거래 완료</span>
-                  {% endif %}
-                </div>
-              {% endfor %}
-            {% else %}
-              <div class="text-muted">비슷한 매물이 없습니다.</div>
-            {% endif %}
+      <ul class="specs mb-3">
+        <li><strong>브랜드</strong><span>
+          {% if post.brand %}
+          <span class="brand-tooltip-trigger" style="cursor:pointer; color:var(--spruce);"
+                onmouseover="window.showTooltip && showTooltip(event, 'brand', '{{ post.brand.id }}')"
+                onmouseout="window.hideTooltip && hideTooltip()">{{ post.brand.name }}</span>
+          {% else %}-{% endif %}
+        </span></li>
+        <li><strong>모델</strong><span>{{ post.model_name or '-' }}</span></li>
+        <li><strong>쉐입</strong><span>{{ post.shape or '-' }}</span></li>
+        <li><strong>상태</strong><span>{{ post.condition }}/100</span></li>
+      </ul>
+
+      {% if genre_tags %}
+      <div class="mb-3 d-flex flex-wrap gap-1">
+        {% for genre in genre_tags %}
+        <span class="badge-status">{{ genre }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if famous_users_for_model %}
+      <p class="small text-muted mb-3">이 모델을 쓴 연주자: {{ famous_users_for_model }}</p>
+      {% endif %}
+
+      {% if post.user %}
+      <div class="seller-trust p-3 mb-3">
+        <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+          <div>
+            <div class="text-muted small mb-1">판매자</div>
+            <a href="{{ url_for('main.user_profile', user_id=post.user.id) }}" class="fw-semibold text-decoration-none">{{ post.user.username }}</a>
+            <div class="small text-muted mt-1">판매중 {{ seller_listings|default(0) }} · 거래완료 {{ seller_sold|default(0) }}</div>
           </div>
+          {% if current_user.is_authenticated and current_user.id != post.user_id %}
+          <a href="{{ url_for('main.message_user', other_id=post.user_id, listing=post.id) }}" class="btn btn-brass">이 매물로 문의</a>
+          {% elif not current_user.is_authenticated %}
+          <a href="{{ url_for('auth.login') }}" class="btn btn-ghost">로그인 후 문의</a>
+          {% endif %}
         </div>
       </div>
+      {% endif %}
+
+      {% if current_user.is_authenticated %}
+      <button id="like-button" class="btn btn-ghost w-100" data-url="{{ url_for('main.toggle_like', post_id=post.id) }}">
+        {% if liked %}<i class="bi bi-heart-fill"></i> 좋아요 취소{% else %}<i class="bi bi-heart"></i> 좋아요{% endif %}
+      </button>
+      <div id="like-count" class="small text-muted mt-2 text-center">{{ post.likes|length }}명이 관심 표시</div>
+      {% endif %}
     </div>
 
-    <!-- 댓글 영역 -->
-    <div class="card mb-4">
-      <div class="card-header">
-        💬 댓글
-      </div>
-      <div class="card-body">
-        {% if current_user.is_authenticated %}
-        <form id="comment-form" data-url="{{ url_for('main.add_comment', post_id=post.id) }}">
-          <div class="mb-3">
-            <textarea id="comment-content" class="form-control" rows="3" placeholder="댓글을 입력하세요!" required></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary">댓글 작성</button>
-        </form>
-        {% else %}
-          <p><a href="{{ url_for('auth.login') }}">로그인</a> 후 댓글을 작성하실 수 있습니다.</p>
+    <div class="panel">
+      <div class="fw-semibold mb-2">비슷한 매물</div>
+      {% if similar_posts and similar_posts|length > 0 %}
+        {% for sim in similar_posts %}
+        <a href="{{ url_for('main.view_post', post_id=sim.id) }}" class="d-block text-decoration-none text-reset py-2 {% if not loop.last %}border-bottom{% endif %}">
+          <div class="fw-semibold">{{ sim.title }}</div>
+          <div class="small text-muted">{{ sim.brand.name if sim.brand else '' }} {% if sim.price %}· {{ '%.0f'|format(sim.price) }}만원{% endif %}</div>
+        </a>
+        {% endfor %}
+      {% else %}
+        <div class="text-muted small">비슷한 매물이 없습니다.</div>
+      {% endif %}
+    </div>
+  </aside>
+</div>
+
+<section class="mt-4 pt-3 border-top">
+  <h2 class="h5 mb-3">댓글</h2>
+  {% if current_user.is_authenticated %}
+  <form id="comment-form" class="mb-3" data-url="{{ url_for('main.add_comment', post_id=post.id) }}">
+    <textarea id="comment-content" class="form-control mb-2" rows="3" placeholder="거래 전 확인하고 싶은 점을 남겨보세요" required></textarea>
+    <button type="submit" class="btn btn-primary">댓글 작성</button>
+  </form>
+  {% else %}
+  <p class="text-muted"><a href="{{ url_for('auth.login') }}">로그인</a> 후 댓글을 작성할 수 있습니다.</p>
+  {% endif %}
+
+  <ul id="comment-list" class="list-unstyled">
+    {% for comment in comments %}
+    <li class="py-3 border-bottom" id="comment-{{ comment.id }}">
+      <div class="d-flex justify-content-between gap-2">
+        <div>
+          <strong>{{ comment.user.username }}</strong>
+          <small class="text-muted ms-1">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+        </div>
+        {% if current_user.is_authenticated and current_user.id == comment.user_id %}
+        <button class="btn btn-sm btn-ghost delete-comment" data-comment-id="{{ comment.id }}">삭제</button>
         {% endif %}
       </div>
-      <ul id="comment-list" class="list-group list-group-flush">
-        {% for comment in comments %}
-          <li class="list-group-item" id="comment-{{ comment.id }}">
-            <strong>{{ comment.user.username }}</strong>
-            <small class="text-muted">({{ comment.created_at.strftime('%Y-%m-%d %H:%M') }})</small>
-            {% if current_user.is_authenticated and current_user.id == comment.user_id %}
-              <button class="btn btn-sm btn-outline-danger float-end delete-comment" data-comment-id="{{ comment.id }}">삭제</button>
-            {% endif %}
-            <br>{{ comment.content|safe }}
-            <div class="mt-2">
-              <a href="javascript:void(0);" onclick="toggleReplyForm('{{ comment.id }}')">&#8618; 답글</a>
-              <form id="reply-form-{{ comment.id }}" class="reply-form mt-2" style="display:none;">
-                <div class="input-group">
-                  <input type="text" class="form-control reply-input" placeholder="답글을 입력하세요" data-parent-id="{{ comment.id }}">
-                  <button type="button" class="btn btn-sm btn-outline-primary reply-submit">작성</button>
-                </div>
-              </form>
-            </div>
-            <div id="reply-list-{{ comment.id }}">
-              {% for reply in comment.replies_list %}
-                <div class="mt-3 ms-4 border-start ps-3" id="comment-{{ reply.id }}">
-                  <strong>{{ reply.user.username }}</strong>
-                  <small class="text-muted">({{ reply.created_at.strftime('%Y-%m-%d %H:%M') }})</small>
-                  {% if current_user.is_authenticated and current_user.id == reply.user_id %}
-                    <button class="btn btn-sm btn-outline-danger float-end delete-comment" data-comment-id="{{ reply.id }}">삭제</button>
-                  {% endif %}
-                  <br>{{ reply.content|safe }}
-                </div>
-              {% endfor %}
-            </div>
-          </li>
+      <div class="mt-1">{{ comment.content }}</div>
+      <div class="mt-2">
+        <a href="javascript:void(0);" onclick="toggleReplyForm('{{ comment.id }}')">답글</a>
+        <form id="reply-form-{{ comment.id }}" class="reply-form mt-2" style="display:none;">
+          <div class="input-group">
+            <input type="text" class="form-control reply-input" placeholder="답글 입력" data-parent-id="{{ comment.id }}">
+            <button type="button" class="btn btn-ghost reply-submit">작성</button>
+          </div>
+        </form>
+      </div>
+      <div id="reply-list-{{ comment.id }}">
+        {% for reply in comment.replies_list %}
+        <div class="mt-3 ms-3 ps-3 border-start" id="comment-{{ reply.id }}">
+          <strong>{{ reply.user.username }}</strong>
+          <small class="text-muted ms-1">{{ reply.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+          {% if current_user.is_authenticated and current_user.id == reply.user_id %}
+          <button class="btn btn-sm btn-ghost float-end delete-comment" data-comment-id="{{ reply.id }}">삭제</button>
+          {% endif %}
+          <div>{{ reply.content }}</div>
+        </div>
         {% endfor %}
-      </ul>
-    </div>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
 
-    <!-- 툴팁 영역 (한 번만) -->
-    <div id="infoTooltip" class="brand-tooltip"></div>
-
+<div id="infoTooltip" class="brand-tooltip"></div>
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
 <script src="{{ url_for('static', filename='view_post.js') }}"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-  tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-    new bootstrap.Tooltip(tooltipTriggerEl);
-  });
-});
-</script>
 {% endblock %}
