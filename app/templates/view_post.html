@@ -81,9 +81,31 @@
                 <li class="list-group-item"><strong>가격:</strong>
                     {% if post.price %}{{ "%.0f"|format(post.price) }}만원{% else %}가격 미정{% endif %}
                 </li>
-                <li class="list-group-item"><strong>작성자:</strong> {{ post.user.username }}</li>
                 <li class="list-group-item"><strong>조회수:</strong> {{ post.views }}</li>
             </ul>
+
+            {% if post.user %}
+            <div class="seller-trust mb-3 p-3 border rounded-3" style="background: var(--bg-page); border-color: var(--border) !important;">
+              <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                <div>
+                  <div class="text-muted small mb-1">판매자</div>
+                  <a href="{{ url_for('main.user_profile', user_id=post.user.id) }}" class="fw-semibold text-decoration-none">
+                    {{ post.user.username }}
+                  </a>
+                  <div class="small text-muted mt-1">
+                    판매중 {{ seller_listings|default(0) }} · 거래완료 {{ seller_sold|default(0) }}
+                  </div>
+                </div>
+                {% if current_user.is_authenticated and current_user.id != post.user_id %}
+                <a href="{{ url_for('main.message_user', other_id=post.user_id, listing=post.id) }}" class="btn btn-primary">
+                  <i class="bi bi-chat-dots"></i> 이 매물로 문의
+                </a>
+                {% elif not current_user.is_authenticated %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">로그인 후 문의</a>
+                {% endif %}
+              </div>
+            </div>
+            {% endif %}
 
             {% if genre_tags %}
             <div class="mb-3">
@@ -108,21 +130,16 @@
                     {% endif %}
                 </button>
                 <span id="like-count">{{ post.likes|length }}명이 좋아합니다</span>
-              {% if current_user.id != post.user_id %}
-                <a href="{{ url_for('main.message_user', other_id=post.user_id) }}" class="btn btn-primary">
-                  <i class="bi bi-chat-dots"></i> 판매자에게 메시지 보내기
-                </a>
-              {% endif %}
             </div>
             {% endif %}
 
             <div class="d-flex justify-content-end align-items-center mb-2">
             {% if post.status == 'available' %}
-                <span class="badge bg-success fs-6 px-3 py-2" style="font-size:1.1rem;">거래 가능</span>
+                <span class="badge bg-success fs-6 px-3 py-2" style="font-size:1.1rem;">{{ post.status_label }}</span>
             {% elif post.status == 'reserved' %}
-                <span class="badge bg-warning text-dark fs-6 px-3 py-2" style="font-size:1.1rem;">거래중</span>
+                <span class="badge bg-warning text-dark fs-6 px-3 py-2" style="font-size:1.1rem;">{{ post.status_label }}</span>
             {% elif post.status == 'sold' %}
-                <span class="badge bg-secondary fs-6 px-3 py-2" style="font-size:1.1rem;">거래 완료</span>
+                <span class="badge bg-secondary fs-6 px-3 py-2" style="font-size:1.1rem;">{{ post.status_label }}</span>
             {% endif %}
         </div>
 

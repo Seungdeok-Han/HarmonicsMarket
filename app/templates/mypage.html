@@ -129,6 +129,8 @@
       <!-- 내 악기 탭 -->
       <div class="tab-pane fade {% if request.args.get('tab')=='gear' %}show active{% endif %}" id="gear-pane" role="tabpanel" aria-labelledby="gear-tab">
         <form method="POST" enctype="multipart/form-data" class="card p-4 mb-5 shadow-sm">
+            {% include "_csrf_field.html" %}
+
           <div class="row g-3 align-items-end">
             <div class="col-md-4">
               <label for="brand" class="form-label">제조사</label>
@@ -204,10 +206,14 @@
                   <span class="badge bg-warning text-dark me-2">대표</span>
                 {% else %}
                   <form action="{{ url_for('main.feature_my_instrument', instrument_id=instrument.id) }}" method="POST" class="d-inline me-2">
+            {% include "_csrf_field.html" %}
+
                     <button type="submit" class="btn btn-sm btn-outline-primary" title="대표악기로 등록">대표 지정</button>
                   </form>
                 {% endif %}
                 <form action="{{ url_for('main.delete_my_instrument', instrument_id=instrument.id) }}" method="POST" class="d-inline">
+            {% include "_csrf_field.html" %}
+
                   <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('정말 삭제하시겠습니까?')" title="삭제">
                     <i class="bi bi-trash"></i>
                   </button>

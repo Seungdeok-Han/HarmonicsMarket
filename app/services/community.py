@@ -111,7 +111,18 @@ def import_from_json(posts: List[Dict[str, Any]]) -> int:
 
     user_map: Dict[int, int] = {}
 
-    def map_user(raw_uid: Optional[int], username: Optional[str] = None) -> Optional[int]:
+    def coerce_user_id(value) -> Optional[int]:
+        if value is None:
+            return None
+        if isinstance(value, dict):
+            value = value.get('user_id') or value.get('id')
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return None
+
+    def map_user(raw_uid, username: Optional[str] = None) -> Optional[int]:
+        raw_uid = coerce_user_id(raw_uid)
         if raw_uid is None:
             return None
         if raw_uid in user_map:
@@ -147,10 +158,13 @@ def import_from_json(posts: List[Dict[str, Any]]) -> int:
         db.session.add(post)
         db.session.flush()
 
+        seen_likes = set()
         for like_uid in raw.get('likes') or []:
             mapped = map_user(like_uid)
-            if mapped:
-                db.session.add(CommunityLike(user_id=mapped, post_id=post.id))
+            if not mapped or mapped in seen_likes:
+                continue
+            seen_likes.add(mapped)
+            db.session.add(CommunityLike(user_id=mapped, post_id=post.id))
 
         id_map: Dict[int, int] = {}
         comments = raw.get('comments') or []
@@ -175,10 +189,13 @@ def import_from_json(posts: List[Dict[str, Any]]) -> int:
             db.session.flush()
             if c.get('id') is not None:
                 id_map[c.get('id')] = comment.id
+            seen_comment_likes = set()
             for luid in c.get('likes') or []:
                 mapped = map_user(luid)
-                if mapped:
-                    db.session.add(CommunityCommentLike(user_id=mapped, comment_id=comment.id))
+                if not mapped or mapped in seen_comment_likes:
+                    continue
+                seen_comment_likes.add(mapped)
+                db.session.add(CommunityCommentLike(user_id=mapped, comment_id=comment.id))
         imported += 1
 
     db.session.commit()

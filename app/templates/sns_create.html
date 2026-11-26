@@ -5,6 +5,8 @@
 {% block content %}
 <h3>새 게시물 올리기</h3>
 <form method="post" enctype="multipart/form-data">
+            {% include "_csrf_field.html" %}
+
   <div class="mb-3">
     <label class="form-label">이미지 선택 (여러 장 가능)</label>
     <input type="file" name="images" class="form-control" accept="image/*" multiple>
